@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Bitewise">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#ffffff">
+<title>Bitewise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--brand:#5B2EE5;--lime:#C6F432;--ink:#111114;--ink2:#3d3d45;--mute:#7a7a85;--line:#ececf1;--bg:#fff;--soft:#f5f5f8;--p:#2563eb;--f:#db2777;--c:#d97706;--ok:#16a34a;--bad:#dc2626}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 "Plus Jakarta Sans",-apple-system,system-ui,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:inherit;text-decoration:none}
+.top{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:calc(env(safe-area-inset-top) + 8px) 16px 10px;border-bottom:1px solid transparent}
+.toprow{display:flex;align-items:center;gap:10px}
+.logo{font-weight:800;font-size:21px;letter-spacing:-.6px;display:flex;align-items:center;gap:6px}
+.logo i{width:26px;height:26px;border-radius:8px;background:var(--brand);display:grid;place-items:center;font-style:normal;color:var(--lime);font-size:15px}
+.logo span{color:var(--brand)}
+.ib{margin-left:auto;display:flex;gap:6px}
+.icon{border:0;background:var(--soft);width:36px;height:36px;border-radius:50%;font-size:16px;position:relative}
+.icon .bd{position:absolute;top:-3px;right:-3px;background:var(--brand);color:#fff;font-size:10px;font-weight:800;border-radius:999px;min-width:17px;height:17px;display:grid;place-items:center;padding:0 4px}
+.locbtn{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:13px;color:var(--mute);border:0;background:none;padding:0;max-width:100%}
+.locbtn span{white-space:nowrap}.locbtn{min-width:0;flex:1;text-align:left}
+.locbtn b{color:var(--ink);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seg{display:flex;background:var(--soft);border-radius:999px;padding:3px;margin-left:auto;flex-shrink:0}
+.seg button{border:0;background:none;padding:5px 11px;border-radius:999px;font-size:12px;font-weight:700;color:var(--mute)}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.search{margin-top:10px;display:flex;align-items:center;gap:8px;background:var(--soft);border-radius:14px;padding:10px 14px}
+.search input{border:0;background:none;outline:none;font:inherit;width:100%;color:var(--ink)}
+main{padding:4px 0 calc(env(safe-area-inset-bottom) + 96px)}
+.view{display:none}.view.on{display:block}
+.cats{display:flex;gap:12px;overflow-x:auto;padding:12px 16px 6px;scrollbar-width:none}
+.cats::-webkit-scrollbar,.hs::-webkit-scrollbar,.filters::-webkit-scrollbar,.acts::-webkit-scrollbar,.tabs::-webkit-scrollbar{display:none}
+.cat{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:58px;font-size:11.5px;font-weight:600;color:var(--ink2)}
+.cat .e{width:54px;height:54px;border-radius:50%;background:var(--soft);display:grid;place-items:center;font-size:26px}
+.cat.on .e{background:var(--brand);box-shadow:0 0 0 3px var(--lime) inset}
+.cat.on{color:var(--brand)}
+.cap{margin:10px 16px;border-radius:20px;padding:16px;background:linear-gradient(135deg,var(--brand),#3a1aa8);color:#fff;position:relative;overflow:hidden}
+.cap:after{content:"";position:absolute;right:-30px;top:-30px;width:130px;height:130px;border-radius:50%;background:var(--lime);opacity:.18;pointer-events:none}
+.cap .l{font-size:12px;font-weight:600;opacity:.85;text-transform:uppercase;letter-spacing:.6px;display:flex;justify-content:space-between}
+.cap .v{font-size:28px;font-weight:800;letter-spacing:-1px;margin:2px 0 4px}
+.cap .v small{font-size:14px;font-weight:600;opacity:.8}
+.cap input[type=range]{width:100%;accent-color:var(--lime);position:relative;z-index:1}
+.cap .row2{margin-top:10px;position:relative;z-index:1}
+.cap .hint{font-size:12px;opacity:.85;margin-top:2px}
+.quick{display:flex;gap:6px;margin-top:6px;position:relative;z-index:1;flex-wrap:wrap}
+.quick button{border:0;background:rgba(255,255,255,.16);color:#fff;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:700}
+.quick button.on{background:var(--lime);color:var(--ink)}
+.filters{display:flex;gap:8px;overflow-x:auto;padding:6px 16px;scrollbar-width:none}
+.pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 13px;font-size:13px;font-weight:600;white-space:nowrap}
+.pill.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.sec{display:flex;justify-content:space-between;align-items:baseline;padding:16px 16px 8px}
+.sec h2{margin:0;font-size:20px;font-weight:800;letter-spacing:-.5px}
+.sec span{font-size:12.5px;color:var(--mute)}
+.hs{display:flex;gap:12px;overflow-x:auto;padding:0 16px 6px;scroll-snap-type:x mandatory}
+.pick{min-width:230px;max-width:230px;scroll-snap-align:start;border-radius:18px;border:1px solid var(--line);padding:12px;background:#fff}
+.pick .pn{font-weight:700;font-size:14px;line-height:1.25;min-height:35px}
+.pick .ps{font-size:12px;color:var(--mute);margin:3px 0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pick .pk{display:flex;justify-content:space-between;align-items:center}
+.kc{font-weight:800;font-size:18px}.kc small{font-size:11px;color:var(--mute);font-weight:600}
+.prot{background:var(--lime);color:var(--ink);font-weight:800;font-size:12px;border-radius:8px;padding:3px 7px;white-space:nowrap}
+.list{padding:0 16px}
+.store{margin-bottom:22px}
+.banner{height:118px;border-radius:18px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:58px}
+.banner .tag{position:absolute;left:10px;top:10px;background:#fff;border-radius:999px;font-size:11px;font-weight:700;padding:4px 9px}
+.banner .dist{position:absolute;right:10px;bottom:10px;background:rgba(17,17,20,.82);color:#fff;border-radius:999px;font-size:12px;font-weight:700;padding:4px 10px}
+.banner .near{position:absolute;right:10px;top:10px;background:var(--lime);color:var(--ink);border-radius:999px;font-size:11px;font-weight:800;padding:4px 9px}
+.sh{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-top:9px}
+.sn{font-weight:800;font-size:16.5px;letter-spacing:-.3px}
+.sm{font-size:12.5px;color:var(--mute);margin-top:1px}
+.cta{border:0;background:var(--brand);color:#fff;font-weight:700;font-size:13px;border-radius:999px;padding:8px 14px;white-space:nowrap;display:inline-block}
+.menu{margin-top:8px;border-radius:14px;background:var(--soft);padding:2px 12px}
+.it{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #e6e6ec}
+.it:last-child{border-bottom:0}
+.in{font-size:14px;font-weight:600}
+.im{font-size:12px;margin-top:2px;color:var(--mute)}
+.im span{margin-right:8px;font-weight:600}
+.im .P{color:var(--p)}.im .F{color:var(--f)}.im .C{color:var(--c)}
+.ir{display:flex;align-items:center;gap:8px}
+.ik{font-weight:800;font-size:15px;text-align:right;white-space:nowrap}
+.ik small{display:block;font-size:10.5px;color:var(--mute);font-weight:600}
+.add{border:0;background:var(--brand);color:#fff;width:30px;height:30px;border-radius:50%;font-size:18px;font-weight:700;line-height:1;flex-shrink:0}
+.src{font-size:10px;font-weight:700;border-radius:5px;padding:1px 5px;margin-left:5px;vertical-align:1px}
+.s-pub{background:#dcfce7;color:#166534}.s-est{background:#fef3c7;color:#92400e}.s-ai{background:#ede9fe;color:#5b21b6}
+.more{border:0;background:none;color:var(--brand);font-weight:700;font-size:13px;padding:8px 0}
+.acts{display:flex;gap:6px;margin-top:8px;overflow-x:auto;scrollbar-width:none;align-items:center}
+.ab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 12px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.ab.pri{background:var(--ink);color:#fff;border-color:var(--ink)}
+.empty{color:var(--mute);text-align:center;padding:30px 20px;font-size:14px}
+.status{padding:4px 16px;font-size:12.5px;color:var(--mute)}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid var(--brand);border-top-color:transparent;border-radius:50%;animation:s 1s linear infinite;vertical-align:-2px}
+@keyframes s{to{transform:rotate(360deg)}}
+.skel{height:118px;border-radius:18px;background:linear-gradient(90deg,#f1f1f5,#e7e7ee,#f1f1f5);background-size:200% 100%;animation:sk 1.2s infinite;margin-bottom:22px}
+@keyframes sk{to{background-position:-200% 0}}
+/* meal finder */
+.meal{border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:8px;background:#fff}
+.meal .mh{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.meal .mi{font-size:14px;font-weight:700;line-height:1.3}
+.meal .mi span{display:block;font-weight:500;color:var(--ink2);font-size:13px}
+.satbar{display:flex;align-items:center;gap:6px;margin-top:7px;font-size:12px;color:var(--mute)}
+.satbar .bar{flex:1;height:6px;border-radius:3px;background:#ececf1;overflow:hidden;max-width:110px}
+.satbar .bar i{display:block;height:100%;background:linear-gradient(90deg,#f59e0b,var(--ok))}
+.satbar .ing{letter-spacing:1px}
+.meal .mb{display:flex;gap:6px;margin-top:9px}
+/* cart */
+.wallet{margin:12px 16px;border-radius:20px;padding:16px;background:var(--ink);color:#fff}
+.wallet .l{font-size:12px;opacity:.7;text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+.wallet .v{font-size:30px;font-weight:800;letter-spacing:-1px}
+.wallet .v small{font-size:13px;opacity:.7;font-weight:600}
+.wbar{height:8px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden;margin-top:8px}
+.wbar i{display:block;height:100%;background:var(--lime)}
+.ci{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+.ci .cn{flex:1;min-width:0}
+.ci .cn b{display:block;font-size:14px}
+.ci .cn small{color:var(--mute);font-size:12px}
+.qty{display:flex;align-items:center;gap:8px}
+.qty button{border:1px solid var(--line);background:#fff;width:28px;height:28px;border-radius:50%;font-weight:800}
+.tot{display:flex;justify-content:space-between;padding:14px 0 4px;font-weight:800;font-size:17px}
+.paybtn{width:100%;border:0;background:var(--brand);color:#fff;font-weight:800;font-size:16px;border-radius:16px;padding:15px;margin-top:10px}
+.paybtn:disabled{opacity:.4}
+.paybtn small{display:block;font-weight:600;font-size:12px;opacity:.85}
+.log{font-size:13px;color:var(--ink2);padding:8px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px}
+/* nav */
+nav{position:fixed;left:0;right:0;bottom:0;z-index:10;background:rgba(255,255,255,.97);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;padding:7px 4px calc(env(safe-area-inset-bottom) + 7px)}
+nav button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;font-weight:700;color:var(--mute);position:relative}
+nav button .ni{font-size:21px;line-height:1;filter:grayscale(1);opacity:.55}
+nav button.on{color:var(--brand)}
+nav button.on .ni{filter:none;opacity:1}
+nav .bd{position:absolute;top:-4px;left:calc(50% + 6px);background:var(--brand);color:#fff;font-size:10px;font-weight:800;border-radius:999px;min-width:17px;height:17px;display:grid;place-items:center;padding:0 4px}
+/* sheets */
+.modal{position:fixed;inset:0;background:rgba(17,17,20,.45);z-index:30;display:none;align-items:flex-end;justify-content:center}
+.modal.show{display:flex}
+.sheet{background:#fff;width:100%;max-width:640px;border-radius:24px 24px 0 0;padding:10px 18px calc(env(safe-area-inset-bottom) + 18px);max-height:92vh;overflow:auto}
+.grab{width:40px;height:5px;border-radius:3px;background:#ddd;margin:0 auto 12px}
+.sheet h2{margin:0 0 4px;font-size:20px;font-weight:800;letter-spacing:-.4px}
+.sheet p{color:var(--mute);font-size:13px;margin:4px 0 10px}
+.sheet label{font-size:12.5px;color:var(--ink2);font-weight:700;display:block;margin:12px 0 5px}
+.sheet input[type=text],.sheet input[type=password],.sheet input[type=number],.sheet textarea,.sheet select{width:100%;border:1px solid var(--line);background:var(--soft);border-radius:12px;padding:11px 12px;font:inherit;color:var(--ink)}
+.brow{display:flex;gap:8px;margin-top:16px}
+.btn{border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px 14px;font-weight:700;font-size:14px;text-align:center}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:#fff;flex:1}
+.err{color:var(--bad);font-size:13px;margin-top:8px}
+.bsum{position:sticky;top:-10px;background:#fff;padding:6px 0 10px;z-index:2;border-bottom:1px solid var(--line)}
+.bk{display:flex;justify-content:space-between;align-items:baseline;font-weight:800}
+.bk .big{font-size:26px;letter-spacing:-1px}
+.bk .over{color:var(--bad)}
+.bprog{height:10px;border-radius:5px;background:var(--soft);overflow:hidden;margin:6px 0}
+.bprog i{display:block;height:100%;background:var(--ok);transition:width .2s}
+.bprog i.over{background:var(--bad)}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin:12px 0 4px;scrollbar-width:none}
+.mfp{border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-top:8px}
+.mfp .mt{font-weight:700;font-size:14px}
+.mfp .mm{font-size:12px;color:var(--mute);margin:2px 0 8px}
+.mfp .acts{margin-top:0}
+.note{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:10px 12px;font-size:12.5px;margin:10px 0}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 84px);transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;font-size:13.5px;font-weight:600;opacity:0;transition:.25s;z-index:40;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.foot{font-size:11.5px;color:var(--mute);padding:4px 16px 10px;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="toprow">
+    <div class="logo"><i>b</i>bite<span>wise</span></div>
+    <div class="ib"><button class="icon" id="cartIcon">🛒<span class="bd" id="cartBd" style="display:none"></span></button><button class="icon" id="setBtn">⚙️</button></div>
+  </div>
+  <div class="toprow">
+    <button class="locbtn" id="locBtn">📍 <span id="locPre">Near</span> <b id="locLbl">finding you…</b> ▾</button>
+    <div class="seg" id="mode"><button data-m="delivery">Delivery</button><button data-m="pickup">Pickup</button></div>
+  </div>
+  <div class="search" id="searchWrap">🔍<input id="q" type="text" placeholder="Search stores or dishes" autocomplete="off"></div>
+</div>
+
+<main>
+  <!-- FOOD / DRINKS / DESSERTS share a browse view -->
+  <section class="view on" id="v-browse">
+    <div class="cats" id="cats"></div>
+    <div class="cap">
+      <div class="l"><span id="capLbl">Calorie cap per item</span></div>
+      <div class="v"><span id="kcalVal">700</span> <small>kcal</small></div>
+      <input type="range" id="kcal" min="0" max="1500" step="25">
+      <div class="quick" id="quick"></div>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div id="picksWrap">
+      <div class="sec"><h2 id="picksTitle">Top picks</h2><span>under your cap</span></div>
+      <div class="hs" id="picks"></div>
+    </div>
+    <div class="sec"><h2 id="listTitle">Nearest first</h2><span id="count"></span></div>
+    <div class="status" id="status"></div>
+    <div class="list" id="list"></div>
+  </section>
+
+  <!-- MEAL FINDER -->
+  <section class="view" id="v-meal">
+    <div class="cap">
+      <div class="l"><span>Meal calorie limit</span></div>
+      <div class="v"><span id="mealVal">800</span> <small>kcal · main + side</small></div>
+      <input type="range" id="mealCap" min="300" max="2000" step="25">
+      <div class="row2">
+        <div class="l"><span>Fullness (satiety)</span><span id="satVal">5+</span></div>
+        <input type="range" id="sat" min="0" max="9" step="1">
+        <div class="hint" id="satHint"></div>
+      </div>
+    </div>
+    <div class="filters" id="mfFilters">
+      <button class="pill" data-ms="near">Nearest first</button>
+      <button class="pill" data-ms="best">Best match</button>
+      <button class="pill" data-ms="protein">Most protein</button>
+      <button class="pill" data-mc="1">Include combos</button>
+    </div>
+    <div class="sec"><h2>Curated meals</h2><span id="mfCount"></span></div>
+    <div class="status" id="mfStatus"></div>
+    <div class="list" id="mfList"></div>
+  </section>
+
+  <!-- CART -->
+  <section class="view" id="v-cart">
+    <div class="wallet">
+      <div class="l">Calorie wallet · today</div>
+      <div class="v"><span id="wRem">2000</span> <small>kcal left of <span id="wBud">2000</span></small></div>
+      <div class="wbar"><i id="wBar" style="width:0"></i></div>
+    </div>
+    <div class="list" id="cartList"></div>
+    <div class="sec"><h2>Today's log</h2><span id="logTot"></span></div>
+    <div class="list" id="logList"></div>
+  </section>
+
+  <div class="foot">
+    <span class="src s-pub">CHAIN</span> chain's published nutrition &nbsp;<span class="src s-est">EST</span> estimate &nbsp;<span class="src s-ai">AI</span> scanned menu ·
+    Satiety: 🍗 protein 🥔 potato 🍞 bread 🍚 rice/grains 🫘 legumes 🥚 egg 🥗 veg/fibre<br>
+    Store data © OpenStreetMap contributors. Chain menus change often; check in-store.
+  </div>
+</main>
+
+<nav id="nav">
+  <button data-tab="food" class="on"><span class="ni">🍔</span>Food</button>
+  <button data-tab="meal"><span class="ni">🍱</span>Meal Finder</button>
+  <button data-tab="drinks"><span class="ni">🥤</span>Drinks</button>
+  <button data-tab="desserts"><span class="ni">🍩</span>Desserts</button>
+  <button data-tab="cart"><span class="ni">🛒</span>Cart<span class="bd" id="navBd" style="display:none"></span></button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<!-- Meal builder -->
+<div class="modal" id="bModal"><div class="sheet"><div class="grab"></div>
+  <div class="bsum">
+    <h2 id="bTitle">Meal builder</h2>
+    <div class="bk"><span><span class="big" id="bK">0</span> / <span id="bL">800</span> kcal</span><span id="bLeft"></span></div>
+    <div class="bprog"><i id="bProg"></i></div>
+    <div class="im" id="bMac"></div>
+    <div class="satbar" id="bSat"></div>
+  </div>
+  <div id="bItems"></div>
+  <h2 style="font-size:16px;margin-top:16px">Add extra stuff</h2>
+  <div class="tabs" id="bTabs"></div>
+  <div class="search" style="margin-top:6px">🔍<input id="bQ" type="text" placeholder="Search this menu" autocomplete="off"></div>
+  <div id="bMenu"></div>
+  <div class="brow"><button class="btn" id="bCancel">Close</button><button class="btn pri" id="bAdd">Add to cart</button></div>
+</div></div>
+
+<!-- Receipt / MFP -->
+<div class="modal" id="rModal"><div class="sheet"><div class="grab"></div>
+  <h2>✅ Paid <span id="rK"></span> kcal</h2>
+  <p id="rRem"></p>
+  <div class="note">MyFitnessPal doesn't let other apps log food for you, so each item below has <b>Find in MFP</b> (searches MyFitnessPal's database, which has most AU chains) and <b>Copy</b> for Quick Add.</div>
+  <div class="brow" style="margin-top:4px"><button class="btn" id="rCopyAll" style="flex:1">📋 Copy all</button><a class="btn pri" href="https://www.myfitnesspal.com/food/diary">Open MyFitnessPal</a></div>
+  <div id="rItems"></div>
+  <div class="brow"><button class="btn pri" id="rDone">Done</button></div>
+</div></div>
+
+<!-- Location -->
+<div class="modal" id="lModal"><div class="sheet"><div class="grab"></div>
+  <h2>Where are you?</h2>
+  <p>Stores are found around this spot, nearest first.</p>
+  <button class="btn pri" id="lGps" style="width:100%">📍 Use my current location</button>
+  <label>Or search a suburb / address</label>
+  <div class="brow" style="margin-top:0"><input type="text" id="lQ" placeholder="e.g. Carnes Hill NSW 2171"><button class="btn" id="lGo">Go</button></div>
+  <div class="err" id="lErr"></div>
+  <label>Search radius</label>
+  <div class="tabs" id="lRad"></div>
+</div></div>
+
+<!-- Menu scan -->
+<div class="modal" id="menuModal"><div class="sheet"><div class="grab"></div>
+  <h2 id="mTitle">Scan menu</h2>
+  <p>Tap <b>Open in Uber Eats</b>, find this store and screenshot its menu (Uber Eats shows kJ on many items). Add screenshots, a photo of a paper menu, or paste text. Printed kJ/calories are used where shown; the rest is estimated.</p>
+  <label>Screenshots / photos</label>
+  <input type="file" id="mFile" accept="image/*" multiple>
+  <label>…or paste menu text</label>
+  <textarea id="mText" rows="5" placeholder="e.g. Chicken schnitzel with chips and salad $26…"></textarea>
+  <div class="err" id="mErr"></div>
+  <div class="brow"><button class="btn" id="mUE">Open in Uber Eats</button><button class="btn pri" id="mGo">Scan menu</button></div>
+  <div class="brow" style="margin-top:8px"><button class="btn" id="mCancel" style="flex:1">Cancel</button></div>
+</div></div>
+
+<!-- Settings -->
+<div class="modal" id="setModal"><div class="sheet"><div class="grab"></div>
+  <h2>Account</h2>
+  <label>Daily calorie budget (your wallet)</label>
+  <input type="number" id="sBud" inputmode="numeric" min="800" max="6000" step="50">
+  <label>Anthropic API key (for menu scanning)</label>
+  <input type="password" id="sKey" placeholder="sk-ant-…" autocomplete="off">
+  <p>Stored only on this phone and sent only to Anthropic.</p>
+  <label>Model</label>
+  <input type="text" id="sModel">
+  <label>Navigation app (Pickup)</label>
+  <select id="sNav"><option value="waze">Waze</option><option value="apple">Apple Maps</option><option value="google">Google Maps</option></select>
+  <div class="brow"><button class="btn" id="sClear">Clear scans</button><button class="btn" id="sRefresh">Refresh stores</button><button class="btn pri" id="sSave">Save</button></div>
+</div></div>
+
+<script>
+/* ======================= storage & state ======================= */
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const S={tab:'food',kcal:store.get('kcal',700),dk:store.get('dk',300),xk:store.get('xk',400),rad:store.get('rad3',5),type:'',sort:store.get('sort','protein'),cat:'all',q:'',
+  mode:store.get('mode','delivery'),mealCap:store.get('mealCap',800),sat:store.get('sat',5),ms:store.get('ms','near'),combos:store.get('combos',true),
+  budget:store.get('budget',2000),key:store.get('apikey',''),model:store.get('model','claude-sonnet-5-5'),nav:store.get('nav','waze'),
+  loc:store.get('loc',null)};
+const DEFAULT_LOC={lat:-33.9395,lon:150.8475,label:'Carnes Hill NSW 2171',gps:false};
+let aiMenus=store.get('aiMenus',{});
+let cart=store.get('cart',[]);
+let ledger=store.get('ledger',{});
+let places=[],expanded=new Set();
+
+/* ======================= chain data (official AU nutrition) ======================= */
+const CH={"kfc":{"l":"KFC","r":"\\bkfc\\b|kentucky fried","i":[["Chris' Big Bro Combo (burger + reg Pepsi Max)",574,48.0,24.2,39.7,"m"],["Zinger Protein Bowl Combo (bowl + reg chips + reg drink)",837,48.7,40.5,68.4,"m"],["Zinger Protein Pack (Power Burger + Power Slider + Pepsi Max)",692,40.1,28.0,70.0,"m",1],["Zinger Burger Combo",715,33.6,29.6,82.9,"m"],["Zinger Bacon & Cheese Burger Combo",867,40.8,43.0,84.1,"m"],["Zinger Crunch Bowl Combo",652,29.3,33.2,64.8,"m"],["Original Tenders Crunch Bowl Combo",688,24.7,35.3,66.6,"m"],["Zinger Crunch Twister Combo",854,34.5,39.0,96.1,"m"],["Zinger Burger Box",1025,50.0,47.0,96.0,"m",1],["3 Piece Box",1161,71.5,60.3,83.0,"m",1],["Original Crispy Brekkie Tower",718,39.7,35.9,57.4,"m"],["Zinger Brekkie Tower",709,41.9,34.6,55.8,"m"],["Original Crispy Ultimate Brekkie Wrap",675,37.3,37.3,46.8,"m"],["Zinger Ultimate Brekkie Wrap",601,39.6,27.6,47.3,"m"],["Original Crispy Bacon & Egg Roll",600,40.0,25.8,49.8,"m"],["Zinger Bacon & Egg Roll",590,42.2,24.5,48.2,"m"],["Original Crispy Toastie",476,26.7,21.3,42.9,"m"],["Zinger Toastie",451,28.8,18.5,40.8,"m"],["Bacon & Egg Roll",361,21.0,14.0,35.9,"m"],["BLAT",351,15.5,13.7,39.2,"m"],["Bacon & Egg Pocket",334,16.1,13.8,34.8,"m"],["Avocado Toast",218,5.9,5.6,34.4,"m"],["Hashbrown",138,1.4,8.6,13.9,"s"],["Original Crispy Burger",448,24.7,22.3,35.9,"m"],["Original Crispy Bacon & Cheese Burger",570,31.6,32.8,36.2,"m"],["Original Crispy BBQ Bacon Stacker Burger",843,55.0,45.8,51.5,"m"],["Double Tender Burger",450,23.3,24.2,33.8,"m"],["Zinger Burger",448,26.2,22.5,34.4,"m"],["Zinger Bacon & Cheese Burger",549,33.1,30.0,36.2,"m"],["Zinger Stacker Burger",737,51.2,37.3,48.8,"m"],["Zinger Crunch Burger",568,29.7,29.3,45.2,"m"],["Pickle Burger",547,25.3,29.6,43.2,"m"],["Pickle Zinger Burger",547,26.8,29.8,41.8,"m"],["1 Piece of Chicken",235,20.4,13.9,7.2,"m"],["3 Pieces of Chicken",705,61.2,41.7,21.6,"m"],["Original Crispy Fillet Piece",224,18.9,11.8,10.5,"m"],["Zinger Fillet Piece",224,20.4,12.0,9.1,"m"],["3 Pieces Wicked Boneless",343,28.2,17.3,18.4,"m"],["6 Pieces Wicked Boneless",685,56.4,34.6,36.8,"m"],["3 Wicked Wings",389,22.6,27.3,13.9,"m"],["6 Wicked Wings",779,45.1,54.6,27.8,"m"],["1 Wicked Wing",130,7.5,9.1,4.6,"m"],["3 Original Tenders",431,26.2,30.1,14.4,"m"],["3 Original Tenders Dip'd",546,35.0,33.0,28.0,"m",1],["5 Original Tenders Dip'd",815,57.8,50.0,40.0,"m",1],["3 Nuggets",125,8.0,7.7,6.0,"m"],["6 Nuggets",311,16.2,19.1,15.0,"m",1],["10 Nuggets",539,27.0,33.0,26.0,"m",1],["Snack Popcorn Chicken",241,11.8,15.0,14.8,"m"],["Regular Popcorn Chicken",393,19.3,24.4,24.1,"m"],["Maxi Popcorn Chicken",720,35.3,44.8,44.2,"m"],["Zinger Protein Bowl",552,44.0,28.9,27.6,"m"],["Zinger Crunch Twister",582,27.4,27.9,53.4,"m"],["Original Crunch Twister",517,23.5,26.0,45.4,"m"],["Zinger Crunch Bowl",415,23.2,23.2,27.5,"m"],["Original Tenders Crunch Bowl",403,20.0,23.8,25.8,"m"],["Original Pepper Mayo Slider",269,12.1,13.6,23.9,"m"],["Original BBQ Slider",242,12.2,8.9,27.6,"m"],["Original Supercharged Slider",259,12.1,12.1,24.6,"m"],["Regular Chips",283,4.4,11.5,40.6,"s"],["Large Chips",567,8.9,23.0,81.1,"s"],["Regular Potato & Gravy",64,1.9,0.9,12.0,"s"],["Regular Coleslaw",93,1.1,3.4,14.1,"s"],["Crunchy Jalapeno Slaw",192,2.8,11.2,18.4,"s"],["Regular Gravy",51,1.8,1.2,8.3,"s"],["Dinner Roll",107,4.0,2.4,16.5,"s"],["Pickle Loaded Chips",1006,23.0,54.6,106.2,"s"],["Frickles",207,2.5,14.4,17.0,"s"],["Double Chocolate Mousse",356,2.8,29.9,19.8,"x"],["Cappuccino (small)",115,6.5,6.1,8.6,"d"],["Latte (small)",111,6.3,6.0,7.7,"d"],["Flat White (small)",110,6.3,6.0,7.7,"d"],["Hot Chocolate (small)",177,6.9,5.4,24.0,"d"],["Mocha (small)",195,8.1,6.3,25.2,"d"],["Long Black",2,0.4,0.1,0.0,"d"],["Dare Charged Strong Latte",100,3.9,3.4,13.5,"d"],["Pepsi (reg)",104,0.0,0.0,27.4,"d"],["Pepsi Max (reg)",1,0.2,0.0,0.2,"d"],["7Up (reg)",166,0.0,0.0,42.6,"d"],["Mountain Dew (reg)",105,0.0,0.0,28.2,"d"],["Solo (reg)",186,0.2,0.0,44.9,"d"],["Sunkist No Sugar (reg)",2,0.0,0.0,0.0,"d"],["Pepsi Freeze",175,0.0,0.0,43.0,"d"],["Mountain Dew Freeze",187,0.0,0.0,46.1,"d"],["Raspberry Freeze",182,0.0,0.0,44.4,"d"],["Apple Juice",141,0.0,0.0,34.7,"d"],["Lipton Peach Ice Tea",94,0.5,0.5,22.1,"d"],["Bottled Water",0,0.0,0.0,0.0,"d"],["Pickle Pepsi Max",5,0.3,0.0,0.8,"d"],["Pickle Pepsi",107,0.1,0.0,27.9,"d"],["1.25L Pepsi",340,0.0,0.0,89.8,"d"],["1.25L Pepsi Max",5,0.8,0.0,0.8,"d"],["Aioli Dip",136,0.3,14.6,1.2,"e"],["BBQ Dip",49,0.2,0.0,11.8,"e"],["Supercharged Dip",105,0.4,9.8,4.2,"e"],["Sweet & Sour Dip",65,0.2,0.4,15.1,"e"],["Tomato Dip",35,0.5,0.1,8.0,"e"]]},"mcdonalds":{"l":"McDonald's","r":"mc ?donald|maccas","i":[["Big Arch",1102,58.8,69.2,57.5,"m"],["Big Mac",621,28.7,34.4,46.5,"m"],["Double Big Mac",813,42.4,47.7,51.6,"m"],["Cheeseburger",318,15.3,14.3,31.0,"m"],["Double Cheeseburger",480,26.2,25.9,34.4,"m"],["Triple Cheeseburger",688,40.5,41.0,37.8,"m"],["Hamburger",294,14.2,12.3,30.2,"m"],["Quarter Pounder",545,31.1,29.2,37.0,"m"],["Double Quarter Pounder",844,54.2,51.6,37.9,"m"],["Quarter Pounder Deluxe",588,31.7,32.6,38.5,"m"],["Double Quarter Pounder Deluxe",887,54.8,55.0,39.3,"m"],["Quarter Pounder BBQ Bacon",581,34.8,31.0,38.5,"m"],["Double Quarter Pounder BBQ Bacon",882,58.0,53.4,39.4,"m"],["Cheesy Quarter Pounder",887,45.7,51.0,57.7,"m"],["Cheesy Double Quarter Pounder",1185,68.9,73.4,58.5,"m"],["3 Chicken McNuggets",114,6.5,6.7,7.0,"m"],["6 Chicken McNuggets",228,13.0,13.4,14.0,"m",1],["10 Chicken McNuggets",380,21.7,22.3,23.3,"m",1],["20 Chicken McNuggets",760,43.3,44.7,46.7,"m",1],["McWings",480,27.5,30.2,20.6,"m"],["Chicken 'n' Cheese",418,16.7,21.0,39.3,"m"],["McChicken",430,16.2,19.7,45.2,"m"],["Double McChicken",621,27.5,29.5,58.8,"m"],["McCrispy",641,24.5,35.1,55.0,"m"],["McCrispy Chicken Deluxe",690,29.5,31.9,60.3,"m"],["Cheesy McCrispy",942,42.4,46.7,84.9,"m"],["McSpicy Burger",554,28.1,26.6,47.3,"m"],["Filet-o-Fish",337,14.6,14.5,34.6,"m"],["Double Filet-o-Fish",485,25.3,22.2,42.9,"m"],["Chicken Snack Wrap",309,14.0,9.6,32.5,"m"],["Classic Chicken McWrap",696,23.1,38.5,62.1,"m"],["Spicy Chicken McWrap",586,29.0,28.3,51.6,"m"],["Bacon & Egg McMuffin",282,17.6,11.8,25.3,"m"],["Double Bacon & Egg McMuffin",327,21.5,15.1,25.4,"m"],["Sausage McMuffin",296,15.9,14.0,25.2,"m"],["Double Sausage McMuffin",449,26.5,26.2,25.9,"m"],["Sausage & Egg McMuffin",366,21.9,19.3,25.5,"m"],["Double Sausage & Egg McMuffin",521,32.3,31.7,26.3,"m"],["Chicken McMuffin",402,19.2,18.4,38.3,"m"],["Chicken and Bacon McMuffin",428,22.9,19.6,38.6,"m"],["Mighty McMuffin",442,29.7,21.7,30.8,"m"],["Big Brekkie Burger",750,39.6,40.9,54.0,"m"],["Brekkie Wrap",449,17.9,25.1,36.5,"m"],["Mega Brekkie Wrap",861,45.8,53.7,53.8,"m"],["Ham & Cheese Pocket",206,10.9,9.1,19.1,"m"],["Hotcakes with Butter and Syrup",593,9.1,18.2,97.1,"m"],["Deluxe Bacon & Egg McMuffin",327,18.1,15.9,26.8,"m"],["Deluxe Sausage & Egg McMuffin",409,22.3,22.8,27.1,"m"],["Deluxe Mighty McMuffin",485,30.2,26.4,30.1,"m"],["Deluxe Brekkie McWrap",502,20.2,29.4,37.8,"m"],["Birdie Bacon & Egg McMuffin",378,18.0,21.3,27.7,"m"],["Birdie Sausage & Egg McMuffin",457,22.2,28.2,28.0,"m"],["Birdie Brekkie McWrap",516,18.3,33.5,34.7,"m"],["Birdie Chicken & Bacon McMuffin",490,23.2,25.8,40.0,"m"],["Hash Brown",143,1.4,9.6,12.5,"s"],["Small Fries",218,3.5,11.5,24.3,"s"],["Medium Fries",327,5.3,17.3,36.5,"s",1],["Large Fries",436,7.0,23.0,48.6,"s",1],["Apple Slices",31,0.2,0.2,6.4,"s"],["Mozzarella Sticks",318,13.0,14.7,31.2,"s"],["Ham, Cheese & Tomato Toastie",363,20.2,11.1,44.4,"m"],["Ham & Cheese Toastie",356,19.8,11.1,43.6,"m"],["Cheese & Tomato Toastie",323,14.3,9.2,44.5,"m"],["Cheesy Toastie",315,13.9,9.2,43.6,"m"],["Banana Bread with Butter",543,7.0,25.4,70.3,"x"],["Raisin Toast with Butter",239,6.9,7.1,34.6,"x"],["Double Choc Muffin",676,6.8,29.9,93.7,"x"],["Apple Crumble Muffin",598,7.0,25.7,82.9,"x"],["Apple Pie",257,2.2,14.8,28.2,"x"],["McDonaldland Cookies",270,3.1,8.2,45.0,"x"],["M&M Minis McFlurry",409,7.8,15.2,59.1,"x"],["Oreo McFlurry",313,7.3,10.1,47.2,"x"],["Tim Tam & Jatz Inspired McFlurry",359,7.9,10.6,56.3,"x"],["Soft Serve Cone",138,4.0,3.7,22.0,"x"],["Soft Serve Cone with Flake",192,4.3,7.1,27.3,"x"],["Caramel Sundae",353,5.8,8.8,61.1,"x"],["Hot Fudge Sundae",357,6.2,9.9,59.9,"x"],["Plain Sundae",194,5.7,5.5,30.0,"x"],["Strawberry Sundae",298,5.6,6.9,52.2,"x"],["Berry McPops",104,1.4,6.0,11.3,"x"],["Biscoff McPops",124,1.3,7.5,12.5,"x"],["Choc McPops",127,1.6,8.3,11.5,"x"],["Chocolate Shake",294,8.3,7.4,47.9,"d"],["Strawberry Shake",292,7.8,7.1,48.5,"d"],["Vanilla Shake",289,7.8,7.1,47.6,"d"],["Coffee Frappe",543,10.2,24.9,67.7,"d"],["Salted Caramel Frappe",502,10.9,26.6,54.5,"d"],["Chocolate Frappe",558,9.2,24.1,74.7,"d"],["Strawberry Shortcake Frappe",748,13.3,32.0,102.0,"d"],["Choc Coconut Frappé",595,11.7,26.0,78.0,"d"],["Babyccino",34,3.2,0.1,4.9,"d"],["Macchiato",2,0.2,0.0,0.3,"d"],["Piccolo Latte",29,3.0,0.1,3.9,"d"],["Cappuccino",80,7.6,0.3,11.3,"d"],["Flat White",74,7.6,0.2,10.2,"d"],["Latte",74,7.6,0.2,10.2,"d"],["Caramel Latte",92,6.6,0.2,15.7,"d"],["Vanilla Latte",92,6.6,0.2,15.7,"d"],["Hazelnut Latte",92,6.6,0.2,15.7,"d"],["Matcha Latte",213,7.7,0.2,36.9,"d"],["Mocha",147,10.0,0.8,23.6,"d"],["Hot Chocolate",188,9.8,1.2,32.4,"d"],["Chai Latte",136,8.5,1.0,22.8,"d"],["Long Black",0,0.0,0.0,0.0,"d"],["English Breakfast Tea",5,0.3,0.3,0.0,"d"],["Iced Latte",107,7.4,0.2,18.5,"d"],["Iced Mocha",189,7.1,0.5,37.8,"d"],["Iced Chocolate",222,8.4,6.2,32.1,"d"],["Iced Chai Latte",140,8.9,1.0,23.3,"d"],["Iced Matcha Latte",211,7.5,0.2,36.7,"d"],["Iced Strawberry Matcha Latte",280,6.4,0.1,53.1,"d"],["Deluxe Caramel Iced Coffee",213,7.5,5.8,32.1,"d"],["Deluxe Hazelnut Iced Coffee",213,7.5,5.8,32.1,"d"],["Deluxe Vanilla Iced Coffee",244,6.6,11.8,27.2,"d"],["Iced Golden Caramel Latte",308,6.6,7.2,52.5,"d"],["Iced Velvet Mocha with Cold Foam",373,5.2,12.6,58.3,"d"],["Vanilla Iced Matcha with Cold Foam",304,7.0,9.2,46.8,"d"],["Iced Long Black",0,0.0,0.0,0.0,"d"],["Brown Sugar Shaken Espresso",163,0.9,4.2,29.2,"d"],["Strawberry Watermelon Refresher",96,0.3,0.2,22.0,"d"],["Popping Mango Refresher",118,0.0,0.0,28.0,"d"],["Berry Blast & Sprite",182,0.2,3.2,37.0,"d"],["Popping Green Apple & Sprite",180,0.0,0.0,43.6,"d"],["Red Bull",117,0.0,0.0,27.0,"d"],["Red Bull Zero Peach Energiser",85,0.0,0.0,20.2,"d"],["Kirks Lemon Lime Bitters",74,0.0,0.0,17.4,"d"],["Coca-Cola",95,0.0,0.0,23.4,"d"],["Coca-Cola Zero Sugar",1,0.0,0.0,0.2,"d"],["Coca-Cola Vanilla",100,0.0,0.0,24.6,"d"],["Sprite",95,0.0,0.0,22.9,"d"],["Fanta",117,0.0,0.0,29.5,"d"],["Orange Juice",112,0.0,0.0,28.5,"d"],["Water 600mL",0,0.0,0.0,0.0,"d"],["Frozen Coke",54,0.0,0.0,13.3,"d"],["Frozen Coke Zero Sugar",0,0.1,0.0,0.0,"d"],["Frozen Fanta Raspberry",54,0.0,0.0,13.3,"d"],["CalciYum Chocolate Milk",151,8.3,3.5,20.5,"d"],["BBQ Dipping Sauce",44,0.3,0.1,10.2,"e"],["Sweet and Sour Sauce",49,0.1,0.1,11.6,"e"],["Sweet Mustard Sauce",78,0.3,2.9,12.7,"e"],["Ranch Dipping Sauce",132,0.2,13.6,2.8,"e"],["Aioli",185,0.5,20.0,1.5,"e"],["Big Mac Special Sauce",90,0.2,8.1,4.3,"e"],["Hotcake Syrup",178,0.0,0.0,44.6,"e"]]},"hungryjacks":{"l":"Hungry Jack's","r":"hungry jack|burger king","i":[["Hamburger",285,13.5,13.1,27.9,"m"],["Cheeseburger",322,15.8,16.0,28.3,"m"],["Double Cheeseburger",473,26.4,28.0,28.7,"m"],["Triple Cheeseburger",624,37.0,40.0,29.2,"m"],["BBQ Cheeseburger",338,15.8,24.9,28.4,"m"],["Bacon Deluxe",512,29.7,38.7,27.1,"m"],["Whopper",582,28.1,45.2,46.6,"m"],["Whopper with Cheese",657,32.7,51.0,47.5,"m"],["Double Whopper",847,47.4,66.3,46.6,"m"],["Double Whopper with Cheese",992,56.4,78.0,47.9,"m"],["Ultimate Double Whopper",1052,62.9,80.8,48.4,"m"],["Triple Whopper Cheese",1381,80.5,95.7,52.1,"m"],["Big Jack",558,25.6,35.0,35.5,"m"],["Double Big Jack",822,44.5,56.0,35.9,"m"],["Big Jack Angus",1024,65.8,68.9,36.6,"m"],["Whopper Junior",293,13.5,20.7,28.6,"m"],["Whopper Junior Cheese",394,16.6,23.0,30.6,"m"],["Cowboy Whopper",832,40.2,62.0,58.1,"m"],["Double Cowboy Whopper",1170,64.1,89.0,59.0,"m"],["Angry Whopper",813,34.0,53.3,59.8,"m"],["Whopper Veggie Cheese",544,17.6,37.5,61.9,"m"],["Plant Based Whopper",554,24.6,40.7,49.8,"m"],["Plant Based Whopper Cheese",629,29.6,47.0,50.0,"m"],["Plant Based Angry Whopper",701,30.4,52.2,56.0,"m"],["Grill Masters Spicy Chipotle Angus",804,46.0,54.4,33.6,"m"],["Grill Masters Double Spicy Chipotle Angus",1226,79.5,86.7,34.4,"m"],["Grill Masters Chicago Angus",796,45.7,55.4,29.7,"m"],["Grill Masters Cowboy Angus",951,52.7,66.5,34.8,"m"],["Grill Masters Angus Bacon & Cheese",810,50.8,54.5,31.3,"m"],["Grill Masters Double Angus Bacon & Cheese",1307,89.3,93.1,32.3,"m"],["Grill Masters Smoky Chipotle Angus",768,45.7,52.4,29.8,"m"],["Grilled Chicken",350,22.4,17.0,26.7,"m"],["Spicy Grilled Chicken",332,22.4,14.5,27.4,"m"],["Grilled Chicken with Bacon & Cheese",418,28.0,21.7,27.4,"m"],["Napoletana Grilled Chicken",421,32.2,32.4,33.5,"m"],["Chicken Royale",336,11.5,27.2,41.7,"m"],["Jack's Fried Chicken Classic",679,36.1,48.3,55.2,"m"],["Spicy Jack's Fried Chicken",723,36.1,38.9,56.1,"m"],["Napoletana Jack's Fried Chicken",777,43.1,53.4,62.7,"m"],["Cheesy Bacon Spicy Jack's Fried Chicken",790,41.6,43.6,56.8,"m"],["Cheesy Bacon Classic Jack's Fried Chicken",747,41.7,53.1,55.9,"m"],["3 Chicken Nuggets",130,7.4,6.4,10.7,"m"],["6 Chicken Nuggets",260,14.8,12.8,21.4,"m",1],["9 Chicken Nuggets",390,22.2,19.2,32.1,"m",1],["Chicken Tender Strips",572,23.7,39.0,31.7,"m"],["JFC Tender Snack Wrap Peppercorn",274,9.9,16.5,21.5,"m"],["JFC Tender Snack Wrap Smoky BBQ",236,9.8,10.8,24.6,"m"],["JFC Tender Snack Wrap Spicy",261,9.8,14.9,21.6,"m"],["Nuggets & Chips Carry Cup",435,10.7,20.8,51.2,"m"],["18 Nuggets & Sauces",767,42.0,39.6,61.2,"m"],["BBQ Brekky Wrap",444,28.7,23.9,28.2,"m"],["Big BBQ Brekky Wrap",622,28.4,35.1,48.1,"m"],["Mega BBQ Brekky Wrap",962,55.0,61.8,48.4,"m"],["Sausage & Egg Turkish Brekky Roll",489,26.6,25.9,36.5,"m"],["Jack's Brekky Roll",592,34.7,36.9,30.9,"m"],["Cheese Toastie",260,11.3,11.1,27.0,"m"],["Ham & Cheese Toastie",287,15.5,12.1,27.8,"m"],["French Toast Fingers",443,1.9,15.4,74.4,"m"],["Hash Brown",164,1.4,11.0,15.2,"s"],["Chips (small)",254,3.1,11.8,33.9,"s"],["Chips (medium)",356,4.3,16.5,47.5,"s",1],["Onion Rings",286,2.6,20.4,23.6,"s"],["Biscoff Storm",624,13.8,27.7,79.2,"x"],["Storm Oreo",420,12.2,16.8,54.8,"x"],["Storm Cadbury Flake",518,13.6,22.4,65.0,"x"],["Pistachio Papi Storm",687,15.8,33.9,82.5,"x"],["Chocolate Sundae",376,9.6,13.4,53.7,"x"],["Caramel Sundae",390,9.5,14.0,56.2,"x"],["Strawberry Sundae",345,9.0,12.1,50.5,"x"],["Sticky Date Pudding",229,2.3,11.6,28.4,"x"],["Soft Serve Cone",189,5.5,7.6,24.7,"x"],["Drumstick Mini Vanilla",144,1.6,6.0,20.6,"x"],["Coke",146,0.0,0.0,36.1,"d"],["Coke No Sugar",1,0.2,0.0,0.4,"d"],["Sprite",143,0.0,0.0,34.4,"d"],["Fanta Orange",183,0.0,0.0,45.9,"d"],["Vanilla Coke",198,0.0,0.0,48.6,"d"],["Keri Apple Juice",143,0.9,0.0,33.6,"d"],["Chocolate Shake",287,8.2,6.5,48.5,"d"],["Strawberry Shake",273,8.2,6.5,45.8,"d"],["Vanilla Shake",254,9.3,7.3,37.6,"d"],["Caramel Shake",279,8.2,6.5,47.2,"d"],["Biscoff Shake",414,9.2,17.1,55.7,"d"],["Pistachio Papi Shake",562,14.2,25.7,71.4,"d"],["Jack'd Up Soda Dirty Cola",217,0.3,4.7,43.1,"d"],["Jack'd Up Soda Blue Lagoon",243,0.1,0.0,58.7,"d"],["Jack'd Up Soda Strawberry Dream",223,0.0,0.0,53.9,"d"],["Jack'd Up Soda Mango Breeze",248,0.1,0.0,60.0,"d"],["Frozen Coke",80,0.0,0.0,19.6,"d"],["Frozen Coke Spider",149,4.2,5.7,20.0,"d"],["Frozen Fanta Raspberry",188,0.0,0.0,45.8,"d"],["Spring Water",0,0.0,0.0,0.0,"d"],["Cappuccino",200,9.7,6.8,24.6,"d"],["Flat White",198,9.7,6.8,24.4,"d"],["Latte Large",204,15.8,1.1,32.4,"d"],["Chai Latte",217,8.0,7.9,28.4,"d"],["Mocha",289,9.8,6.3,46.8,"d"],["Hot Chocolate",221,7.3,6.7,31.9,"d"],["Long Black",1,0.4,0.1,0.4,"d"],["Iced Coffee",181,7.3,12.3,10.5,"d"],["Iced Chocolate",344,9.3,13.4,45.4,"d"],["Iced Mocha",318,8.0,11.9,43.5,"d"],["Iced Chai",373,7.7,13.0,55.8,"d"],["Caramel Fudge Iced Coffee",435,9.0,16.6,61.8,"d"],["Spicy Sauce Tub",127,0.5,13.5,1.4,"e"],["BBQ Plum Sauce Tub",62,0.3,0.3,14.2,"e"],["Sweet 'n' Sour Sauce Tub",42,0.3,0.3,10.1,"e"],["Garlic Aioli Tub",117,0.5,12.1,2.0,"e"]]},"gyg":{"l":"Guzman y Gomez","r":"guzman|\\bgyg\\b","i":[["Grilled Chicken Burrito",773,48.3,23.5,91.0,"m"],["Ground Beef Burrito",828,36.7,33.5,93.9,"m"],["Pulled Pork Burrito",759,42.1,24.9,90.4,"m"],["Pulled Shiitake Mushroom Burrito",899,32.3,41.2,94.8,"m"],["Sautéed Vegetables Burrito with Guac",808,24.0,35.2,96.7,"m"],["Shredded Beef Brisket Burrito",806,48.5,27.3,90.6,"m"],["Crispy Chicken Tenders Cali Burrito",1050,36.4,58.6,90.4,"m"],["Grilled Chicken Cali Burrito",966,47.5,50.4,77.8,"m"],["Ground Beef Cali Burrito",1020,35.9,60.4,80.7,"m"],["Pulled Pork Cali Burrito",952,41.3,51.8,77.2,"m"],["Shredded Beef Brisket Cali Burrito",999,47.7,54.2,77.4,"m"],["Grilled Chicken Caesar Burrito",855,44.8,48.7,57.7,"m"],["Crispy Chicken Tenders Caesar Burrito",936,33.7,56.9,70.3,"m"],["Honey Habanero Tender Cali Burrito",1070,36.0,60.8,90.7,"m"],["Grilled Chicken Bowl",659,43.8,20.5,74.1,"m"],["Ground Beef Bowl",714,32.2,30.5,77.0,"m"],["Pulled Pork Bowl",645,37.6,21.9,73.5,"m"],["Pulled Shiitake Mushroom Bowl",785,27.8,38.2,77.9,"m"],["Sautéed Vegetables Bowl with Guac",694,19.5,32.2,79.8,"m"],["Shredded Beef Brisket Bowl",692,44.0,24.3,73.7,"m"],["Grilled Chicken Soft Taco",192,15.8,7.1,15.6,"m"],["Ground Beef Soft Taco",214,11.2,11.1,16.7,"m"],["Pulled Pork Soft Taco",187,13.3,7.7,15.3,"m"],["Shredded Beef Brisket Soft Taco",205,15.9,8.6,15.4,"m"],["Pulled Shiitake Mushroom Soft Taco",281,6.9,19.7,18.2,"m"],["Grilled Chicken Hard Taco",186,14.8,7.7,13.2,"m"],["Ground Beef Hard Taco",208,10.2,11.7,14.4,"m"],["Pulled Pork Hard Taco",180,12.3,8.3,13.0,"m"],["Shredded Beef Brisket Hard Taco",199,14.9,9.2,13.1,"m"],["Mild Ground Beef $3 Taco",161,7.3,8.7,12.6,"m"],["Crispy Chicken Tender Soft Taco",294,12.9,17.2,21.3,"m"],["Grilled Chicken Nachos",1110,52.3,64.3,77.7,"m"],["Ground Beef Nachos",1160,40.7,74.3,80.6,"m"],["Pulled Pork Nachos",1090,46.1,65.7,77.1,"m"],["Shredded Beef Brisket Nachos",1140,52.5,68.1,77.3,"m"],["Grilled Chicken Nacho Fries",1020,49.8,62.1,62.0,"m"],["Ground Beef Nacho Fries",1070,38.2,72.1,64.9,"m"],["Cheese Quesadilla",386,16.2,20.6,33.3,"m"],["Grilled Chicken Quesadilla",458,29.8,22.4,33.7,"m"],["Ground Beef Quesadilla",485,24.0,27.4,35.1,"m"],["Pulled Pork Quesadilla",450,26.7,23.1,33.4,"m"],["Shredded Beef Brisket Quesadilla",474,29.9,24.3,33.5,"m"],["Grilled Chicken Quesadilla Plus",538,31.0,30.1,35.0,"m"],["Grilled Chicken Enchilada",1150,59.2,50.2,113.0,"m"],["Ground Beef Enchilada",1200,47.6,60.2,116.0,"m"],["Shredded Beef Brisket Enchilada",1180,59.4,54.0,113.0,"m"],["Grilled Chicken Caesar Salad",579,37.5,40.6,15.1,"m"],["Crispy Chicken Tenders Caesar Salad",660,26.4,48.8,27.7,"m"],["Bacon Brekkie Burrito",587,25.3,33.3,45.2,"m"],["Chicken Chorizo Brekkie Burrito",577,22.7,33.7,44.7,"m"],["Bacon Big Brekkie Burrito",974,40.2,56.2,74.7,"m"],["Bacon Brekkie Bowl",427,30.8,29.1,10.5,"m"],["Chicken Chorizo Brekkie Bowl",411,26.4,29.7,9.7,"m"],["Bacon Brekkie Quesadilla",511,28.1,28.9,34.4,"m"],["Bacon Brekkie Taco",195,11.0,9.8,15.4,"m"],["Toast with Avocado",216,5.1,9.4,27.5,"m"],["Grilled Chicken Little G's Burrito",414,24.8,14.1,46.1,"m"],["Grilled Chicken Little G's Bowl",433,23.1,18.9,41.9,"m"],["Grilled Chicken Little G's Nachos",412,21.6,22.0,30.6,"m"],["Chipotle Fries (small)",358,5.3,18.5,40.7,"s"],["Queso Fries",731,19.8,42.8,64.1,"s"],["Corn Chips",519,7.0,28.4,56.5,"s"],["Corn Chips & Guacamole",756,9.3,53.3,57.4,"s"],["Corn Chips & Queso",648,14.9,38.5,58.6,"s"],["Corn Chips & Pico de Gallo",537,8.1,28.5,58.9,"s"],["2 Crispy Chicken Tenders with BBQ",302,16.6,11.8,31.4,"s"],["3 Crispy Chicken Tenders with BBQ",415,24.7,17.6,38.1,"s"],["Crispy Chicken Tenders & Fries",763,24.0,39.4,74.3,"s"],["Black Beans",154,7.6,1.8,30.4,"s"],["Pinto Beans",220,13.4,3.1,28.8,"s"],["Brown Rice",321,6.6,5.8,58.8,"s"],["White Rice",313,7.0,3.5,62.6,"s"],["Street Corn",176,5.3,7.8,19.5,"s"],["Kids Fries",179,2.6,9.2,20.3,"s"],["Apple (Kids)",69,0.4,0.2,14.9,"s"],["Guacamole",165,1.6,17.3,0.6,"e"],["Queso",92,5.6,7.2,1.5,"e"],["Sour Cream",163,2.4,16.0,3.5,"e"],["Pico de Gallo",18,1.1,0.1,2.4,"e"],["Extra Grilled Chicken",144,27.2,3.5,0.7,"e"],["Extra Shredded Beef Brisket",177,27.4,7.3,0.3,"e"],["Extra Pulled Pork",235,25.5,14.5,0.8,"e"],["Extra Ground Beef",199,15.6,13.5,3.6,"e"],["Extra Bacon",75,7.1,5.0,0.6,"e"],["Extra Scrambled Eggs",84,6.7,6.1,0.8,"e"],["Extra Black Beans",18,0.9,0.2,3.6,"e"],["Extra Brown Rice (Bowl)",217,4.5,3.9,39.8,"e"],["Extra Crushed Corn Chips",78,1.1,4.3,8.5,"e"],["Extra Hashbrown",159,1.8,10.7,13.1,"e"],["Chipotle Mayo",214,0.7,23.2,1.5,"e"],["Sweet Chipotle BBQ Sauce",77,0.5,0.0,18.1,"e"],["Honey Habanero Ranch",131,1.0,11.4,6.2,"e"],["Churros with Chocolate Sauce",400,5.8,21.3,45.4,"x"],["Churros with Dulce de Leche",366,6.7,17.0,42.7,"x"],["Coke",176,0.0,0.0,43.5,"d"],["Coke No Sugar",2,0.0,0.0,0.2,"d"],["Still Water",0,0.0,0.0,0.0,"d"],["Sparkling Water",0,0.0,0.0,0.0,"d"]]},"zambrero":{"l":"Zambrero","r":"zambrero","i":[["Grilled Chicken Classic Burrito",523,22.7,21.6,57.8,"m"],["Barbacoa Beef Classic Burrito",538,23.5,22.3,59.0,"m"],["Pulled Pork Classic Burrito",522,21.2,21.4,58.7,"m"],["Lamb Classic Burrito",534,22.2,22.5,58.9,"m"],["Beef Mince Classic Burrito",542,21.1,24.4,57.9,"m"],["Vegetarian Classic Burrito",654,18.1,30.5,74.6,"m"],["Grilled Chicken Signature Burrito",691,30.0,34.7,62.1,"m"],["Barbacoa Beef Signature Burrito",705,30.8,35.4,63.4,"m"],["Lamb Signature Burrito",701,29.5,35.6,63.3,"m"],["Grilled Chicken Toasted Burrito",603,26.6,28.5,58.6,"m"],["Barbacoa Beef Toasted Burrito",617,27.5,29.1,59.1,"m"],["Grilled Chicken Cali Burrito",609,22.7,31.3,57.4,"m"],["Grilled Chicken Classic Bowl",316,17.2,15.6,26.2,"m"],["Barbacoa Beef Classic Bowl",331,18.1,16.2,27.5,"m"],["Pulled Pork Classic Bowl",316,15.7,15.3,27.2,"m"],["Lamb Classic Bowl",327,16.8,16.5,27.4,"m"],["Beef Mince Classic Bowl",335,15.7,18.4,26.4,"m"],["Vegetarian Classic Bowl",447,12.7,24.5,43.0,"m"],["Grilled Chicken Signature Bowl",442,22.5,25.2,30.0,"m"],["Barbacoa Beef Signature Bowl",456,23.3,25.9,31.2,"m"],["Lamb Signature Bowl",453,22.0,26.1,31.1,"m"],["Grilled Chicken Nachos",498,22.9,31.9,29.2,"m"],["Barbacoa Beef Nachos",521,24.3,33.0,31.2,"m"],["Beef Mince Nachos",532,19.9,36.5,30.2,"m"],["Grilled Chicken Quesadilla Stack",538,32.9,25.5,42.8,"m"],["Barbacoa Beef Quesadilla Stack",566,34.6,26.8,45.3,"m"],["Grilled Chicken Soft Taco",224,13.5,11.4,16.3,"m"],["Barbacoa Beef Soft Taco",239,14.3,12.1,17.6,"m"],["Grilled Chicken Dos Capas",290,14.2,14.9,23.7,"m"],["Grilled Chicken Fat Taco Duo",454,25.0,18.0,47.6,"m"],["Barbacoa Beef Fat Taco Duo",484,26.8,19.2,50.2,"m"],["Grilled Chicken Kids Bowl",452,15.0,18.4,56.0,"m"],["Grilled Chicken Kids Nachos",292,12.5,15.1,26.5,"m"],["Chips",268,3.2,8.4,44.4,"s"],["Corn Chips",336,5.4,16.6,41.1,"s"],["Basilo Sauce",204,0.7,21.6,1.8,"e"],["Chipotle Sauce",196,0.4,21.0,1.9,"e"],["Garlic Sauce",177,0.5,18.5,1.8,"e"],["Red Chilli Sauce",56,0.4,0.7,11.6,"e"],["Verde Sauce",77,0.5,7.4,2.6,"e"]]},"subway":{"l":"Subway","r":"\\bsubway\\b","i":[["6\" Peri Peri-Style Chicken",378,27.9,10.4,41.6,"m"],["6\" Korean-Style BBQ Steak",394,24.3,10.6,47.2,"m"],["6\" Rotisserie-Style Chicken",439,27.0,18.3,40.4,"m"],["6\" Philly-Style Three-Cheese Steak",516,29.4,24.6,41.5,"m"],["6\" Italian Meatball",522,22.0,26.0,49.7,"m"],["6\" Sweet Onion Chicken Teriyaki",396,25.3,8.0,54.5,"m"],["6\" Veggie Delite with Avo",328,12.9,12.3,41.9,"m"],["6\" Chipotle Steak Melt",446,23.2,20.2,40.3,"m"],["6\" Chicken & Bacon Ranch",466,28.9,21.0,39.1,"m"],["6\" Veggie Patty",573,19.1,23.5,67.3,"m"],["6\" Honey Mustard Leg Ham",342,18.2,9.0,45.4,"m"],["6\" Chicken Schnitzel",480,25.0,20.0,48.1,"m"],["6\" Smashed Falafel",498,18.6,19.3,57.8,"m"],["6\" Italian B.M.T.",467,22.6,23.4,40.4,"m"],["6\" Chicken Classic",453,20.3,20.4,45.4,"m"],["6\" Seafood Sensation",393,14.5,15.4,46.7,"m"],["6\" Pizza Melt",411,19.4,18.4,40.5,"m"],["6\" BBQ Southern-Style Chicken",443,17.3,13.7,61.0,"m"],["6\" Tuna Mayo",377,21.7,14.5,38.4,"m"],["6\" Chicken Strips",382,25.7,13.3,38.5,"m"],["6\" Turkey",345,20.7,8.3,45.1,"m"],["Footlong Peri Peri-Style Chicken",756,55.8,20.8,83.2,"m",1],["Footlong Sweet Onion Chicken Teriyaki",792,50.6,16.0,109.0,"m",1],["Footlong Rotisserie-Style Chicken",878,54.0,36.6,80.8,"m",1],["Footlong Korean-Style BBQ Steak",788,48.6,21.2,94.4,"m",1],["Footlong Chicken Strips",764,51.4,26.6,77.0,"m",1],["Peri Peri-Style Chicken Wrap",411,26.8,14.0,42.8,"m"],["Korean-Style BBQ Steak Wrap",426,23.1,14.2,48.5,"m"],["Italian Meatball Wrap",555,20.9,29.6,51.0,"m"],["Sweet Onion Chicken Teriyaki Wrap",429,24.2,11.6,55.8,"m"],["Veggie Delite with Avo Wrap",361,11.8,16.0,43.1,"m"],["Chipotle Steak Melt Wrap",479,22.1,23.8,41.6,"m"],["Chicken & Bacon Ranch Wrap",499,27.8,24.7,40.4,"m"],["Honey Mustard Leg Ham Wrap",375,17.1,12.7,46.6,"m"],["Chicken Schnitzel Wrap",513,23.9,23.6,49.3,"m"],["Smashed Falafel Wrap",531,17.5,23.0,59.0,"m"],["Italian B.M.T. Wrap",500,21.5,27.0,41.7,"m"],["Chicken Classic Wrap",486,19.2,24.1,46.7,"m"],["Tuna Mayo Wrap",410,20.5,18.2,39.7,"m"],["Chicken Strips Wrap",415,24.6,17.0,39.8,"m"],["Turkey Wrap",378,19.6,12.0,46.4,"m"],["Peri Peri-Style Chicken Salad",195,21.2,8.4,7.8,"m"],["Korean-Style BBQ Steak Salad",210,17.6,8.6,13.5,"m"],["Italian Meatball Salad",348,15.7,24.0,17.4,"m"],["Sweet Onion Chicken Teriyaki Salad",222,18.9,6.3,21.7,"m"],["Veggie Delite with Avo Salad",150,6.3,10.6,8.4,"m"],["Chipotle Steak Melt Salad",279,17.2,18.5,8.7,"m"],["Chicken & Bacon Ranch Salad",291,22.6,19.4,6.3,"m"],["Chicken Schnitzel Salad",306,18.7,18.3,15.3,"m"],["Smashed Falafel Salad",312,11.6,16.5,25.2,"m"],["Italian B.M.T. Salad",290,16.3,21.4,7.8,"m"],["Tuna Mayo Salad",204,15.4,12.9,5.9,"m"],["Chicken Strips Salad",208,19.4,11.7,5.9,"m"],["Turkey Salad",171,14.3,6.6,12.6,"m"],["Chicken Teriyaki Rice Bowl",274,17.7,3.5,41.8,"m"],["Green Goddess Chicken Rice Bowl",378,18.7,18.2,33.0,"m"],["Green Goddess Falafel Rice Bowl",389,8.4,16.2,46.3,"m"],["Japanese-Style Chicken Rice Bowl",370,17.7,16.6,36.7,"m"],["Korean-Style BBQ Steak Rice Bowl",265,14.6,6.1,33.7,"m"],["Bacon, Egg & Cheese Sub",434,19.2,21.2,40.3,"m"],["Classic Ham & Egg Sub",391,22.0,16.0,38.4,"m"],["Steak & Egg Brekkie Sub",460,29.6,14.8,48.8,"m"],["Mexican-Style Brekkie Wrap",554,23.3,31.3,45.9,"m"],["Spinach & Egg Wrap",347,15.4,14.0,39.0,"m"],["Nachos",394,10.9,24.7,33.0,"s"],["Nachos with Chicken Strips",468,25.0,26.5,33.3,"s"],["Nachos with Rotisserie-Style Chicken",487,27.2,27.3,33.9,"s"],["Nachos with Diced Steak",500,23.7,29.2,35.0,"s"],["Southern-Style Chicken Bites",324,13.3,16.7,30.0,"s"],["Meatball Mozza Pot",322,17.5,22.0,15.0,"s"],["Chipotle Quesadilla",288,8.1,18.8,21.6,"s"],["Creamy Garlic Cheese Bread",379,14.5,16.8,41.2,"s"],["Creamy Garlic Herb Bread",281,8.2,9.0,40.0,"s"],["Smashed Avo on Toast",312,9.7,12.6,42.2,"s"],["Ham, Cheese & Tomato Toastie",278,13.0,10.8,31.8,"s"],["Chocolate Chip Cookie",223,2.3,10.7,29.4,"x"],["Double Chocolate Chip Cookie",211,2.2,9.3,29.4,"x"],["White Chip Macadamia Cookie",223,2.2,11.2,28.3,"x"],["Chocolate Chip Rainbow Cookie",214,2.2,9.9,28.8,"x"],["Raspberry Cheesecake Cookie",212,1.8,9.7,29.4,"x"],["Coca-Cola",168,0.0,0.0,41.3,"d"],["Coca-Cola Zero Sugar",1,0.1,0.0,0.1,"d"],["Sprite",112,0.0,0.0,26.9,"d"],["Fanta Orange 600mL",182,0.0,0.0,43.8,"d"],["Coca-Cola Vanilla 600mL",265,0.0,0.0,66.0,"d"],["Powerade 600mL",148,0.0,0.0,34.8,"d"],["Water 600mL",0,0.0,0.0,0.0,"d"],["Daily Juice Orange 500mL",200,3.0,0.0,44.5,"d"],["Just Juice Apple 200mL",88,0.0,0.0,21.0,"d"],["V Green Energy Drink",117,0.0,0.0,27.0,"d"],["Protein Smoothie Banana Honey",277,30.0,6.0,24.8,"d"],["Protein Smoothie Chocolate",272,30.0,6.0,24.0,"d"],["Dairy Farmers Classic Chocolate 500mL",361,16.0,12.5,45.5,"d"],["Dare Iced Coffee Double Espresso 500mL",421,17.0,17.5,48.5,"d"]]},"redrooster":{"l":"Red Rooster","r":"red rooster","i":[["Quarter Chicken",280,34.9,11.4,8.8,"m"],["Half Chicken",560,69.8,22.7,17.5,"m"],["Whole Chicken",1120,139.7,45.5,35.0,"m"],["1 Fried Chicken",250,18.1,15.8,9.0,"m"],["10 Chicken Nuggets",410,22.9,26.7,17.4,"m"],["10 Cheesy Nuggets",580,21.4,38.0,37.0,"m"],["Buttermilk Wings (3pc)",303,17.9,21.3,10.3,"m"],["3 Tenders",240,23.4,11.1,9.6,"m",1],["Hot Honey Fried Chicken",330,18.2,15.9,28.2,"m"],["Reds Hot Fried Chicken",370,18.6,28.1,10.6,"m"],["Flayva Wrap",680,29.1,46.6,36.8,"m"],["Reds Burger",610,25.1,37.3,42.5,"m"],["BBQ Bacon Burger",710,32.9,38.1,57.5,"m"],["Spicy Burger",540,22.7,30.1,44.2,"m"],["Picklebird Burger",530,25.7,25.5,49.2,"m"],["Kids Cheeseburger",420,17.8,17.5,47.6,"m"],["Picklebird Veggie Burger",580,11.6,26.9,70.9,"m"],["Reds Veggie Burger",650,11.1,38.5,64.1,"m"],["Rippa Roll",580,23.0,32.9,47.0,"m"],["Chilli Aioli Rippa Roll",470,22.9,19.0,51.2,"m"],["Honey BBQ Rippa Roll",530,23.0,21.6,59.3,"m"],["Rooster Roll",610,28.6,25.1,64.3,"m"],["Snack Sub",280,12.7,9.8,32.9,"m"],["Chips (small)",290,5.2,13.2,36.2,"s"],["Sweet Potato Chips (small)",300,1.8,14.3,38.5,"s"],["Crunchy Potato (small)",320,5.2,11.0,49.0,"s"],["Crunchy Slaw (small)",140,2.1,8.8,11.6,"s"],["Battered Corn Wheels",130,1.5,7.8,11.3,"s"],["Garlic Bread",550,15.4,18.2,71.4,"s"],["Gravy",50,0.1,0.8,10.4,"s"],["Mash & Gravy",70,1.0,2.3,11.7,"s"],["Peas",60,5.8,2.0,7.2,"s"],["Pineapple Fritter",150,1.9,6.0,21.4,"x"],["Vanilla Slice Bites",240,4.7,7.5,36.2,"x"],["Chocolate Mousse",390,3.0,28.0,31.6,"x"],["Strawberry Cheesecake",390,6.8,14.8,56.8,"x"],["Herb Mayo",280,0.6,31.4,0.7,"e"],["Chilli Aioli",140,0.4,12.9,6.3,"e"],["Hot Honey",90,0.1,0.1,21.9,"e"],["Smokey BBQ",180,0.4,15.4,8.9,"e"],["Pepsi",166,0.0,0.0,41.5,"d"],["Pepsi Max",1,0.2,0.0,0.2,"d"],["Solo",182,0.0,0.0,45.5,"d"],["Sunkist",121,0.0,0.0,30.0,"d"],["Mountain Dew",177,0.0,0.0,44.0,"d"],["Water",0,0.0,0.0,0.0,"d"],["Apple Juice",176,0.0,0.0,44.0,"d"],["Orange Juice",148,0.0,0.0,37.0,"d"],["Lipton Peach Ice Tea",90,0.0,0.0,22.5,"d"],["Red Bull",116,0.0,0.0,29.0,"d"],["Gatorade",148,0.0,0.0,37.0,"d"]]},"bettys":{"l":"Betty's Burgers","r":"betty.?s burger","i":[["Betty's Classic",550,28.5,36.9,32.9,"m"],["Classic Double",662,55.5,43.6,39.6,"m"],["Betty's Deluxe",685,38.0,41.5,44.0,"m"],["Betty's Double",881,59.3,52.8,42.8,"m"],["Noosa Classic Surf",729,42.5,46.7,35.1,"m"],["Cheeseburger",382,19.3,18.3,34.9,"m"],["Crispy Chicken",625,29.7,37.2,43.1,"m"],["Spicy Chicken",738,43.1,40.9,49.8,"m"],["Crispy Chicken Strips Burger",462,29.8,19.8,41.1,"m"],["Betty's Classic Vegan",875,9.2,54.8,86.7,"m"],["Shroom Burger",656,19.7,33.7,77.5,"m"],["Betty's Classic Plant",557,25.9,33.5,38.0,"m"],["Asian Chicken Bowl",464,41.1,27.8,1.0,"m"],["Hi-Protein Bowl",505,52.2,23.1,12.2,"m"],["Fries",386,4.9,18.4,49.8,"s"],["Snack Fries",193,2.4,10.4,24.6,"s"],["Sweet Potato Fries",338,4.4,16.4,46.7,"s"],["Onion Rings",377,3.4,27.2,30.1,"s"],["Crispy Chicken Strips",524,46.8,25.8,26.0,"s"],["Calamari Bucket",190,13.8,10.8,9.5,"s"],["Betty's Special Sauce",158,0.5,16.0,3.2,"e"],["Garlic Mayo",186,0.5,20.4,1.6,"e"],["BBQ Sauce",74,0.0,0.0,17.1,"e"],["Coke",280,0.0,0.0,68.9,"d"],["Coke No Sugar",2,0.3,0.0,0.7,"d"],["Sprite",275,0.0,0.0,65.7,"d"],["Chocolate Thick Shake",569,17.4,13.7,104.7,"d"],["Vanilla Thick Shake",576,17.0,32.2,67.0,"d"],["Strawberry Thick Shake",531,16.4,17.9,87.2,"d"],["Caramel Thick Shake",523,15.3,23.7,80.3,"d"],["Golden Cookies and Cream Thick Shake",674,16.2,19.6,70.0,"d"]]},"grilld":{"l":"Grill'd","r":"grill.?d\\b","i":[["Simply Grill'd",605,28.1,33.3,30.9,"m"],["Crispy Bacon & Cheese",638,30.5,35.3,31.9,"m"],["Mustard & Pickled!",538,29.2,24.8,31.0,"m"],["Summer Sunset",676,30.2,36.5,39.4,"m"],["Chilli Addict",574,30.7,29.6,27.9,"m"],["Powerhouse",717,40.0,48.1,15.7,"m"],["Big Dill Energy",915,55.7,47.1,34.0,"m"],["Mighty Melbourne / state burger",715,36.0,39.4,36.3,"m"],["Simon Says",511,43.7,21.3,32.4,"m"],["Zen Hen",497,43.1,19.9,32.5,"m"],["Sweet Chilli Chicken",492,43.1,16.9,38.3,"m"],["HotBird",402,42.3,11.8,27.2,"m"],["Bird & Brie",538,45.7,24.9,34.3,"m"],["Caesar's Palace",595,55.0,29.0,24.6,"m"],["Super Nourished",686,53.4,45.1,14.8,"m"],["Protein Pro",719,81.0,27.4,32.8,"m"],["Cluck Norris",698,79.9,24.1,35.6,"m"],["Sweet Holy Cluck",643,28.4,32.0,42.6,"m"],["Hula Hen",614,26.4,25.8,50.4,"m"],["HFC Chipotle",578,26.2,26.9,39.4,"m"],["HFC BLAT",574,26.9,25.9,39.0,"m"],["Baa Baa (Lamb)",571,26.3,36.2,32.1,"m"],["Zorba The Sheep",662,29.3,44.6,32.8,"m"],["Wagyu Wunder",712,38.8,47.1,29.1,"m"],["Grand Brie",696,38.1,45.6,36.0,"m"],["Bonfire BBQ",741,40.2,48.2,32.2,"m"],["Garden Goodness",497,16.9,25.0,50.5,"m"],["Beyond Garden Goodness",545,25.1,29.5,42.5,"m"],["Beyond Mustard & Pickled!",418,24.5,17.8,36.4,"m"],["Classic Slider",323,16.7,18.5,19.3,"m"],["Brie Chick Slider",311,23.0,13.8,20.8,"m"],["Lil' Caesar Slider",361,26.2,19.8,17.1,"m"],["Tender Lovin' Slider",385,14.6,22.9,27.4,"m"],["The Classic Wrap",519,24.2,28.6,38.9,"m"],["Bacon Club Wrap",705,49.8,36.3,41.5,"m"],["Cali Green Goddess Wrap",490,42.5,17.3,39.6,"m"],["Golden Caesar Wrap",657,34.7,34.1,48.9,"m"],["Superpower Salad",459,42.3,22.4,21.6,"m"],["Chicken Caesar Salad",576,51.1,33.9,14.9,"m"],["The Honey'd Hen Salad",447,41.2,20.6,23.3,"m"],["Good Morning",686,33.6,39.8,31.0,"m"],["Morning After",715,32.9,34.6,50.7,"m"],["Avo Good Day!",478,15.5,27.5,43.8,"m"],["Crispy Bacon & Egg Roll",373,13.2,20.8,29.7,"m"],["Famous Chips",335,2.4,15.8,39.8,"s"],["Sweet Potato Chips Mini",220,1.4,11.8,25.5,"s"],["Sweet Potato Chips Regular",461,2.9,24.7,53.3,"s"],["Zucchini Chips Mini",275,3.5,12.2,36.1,"s"],["Saltbush & Pepper Onion Rings",208,1.3,13.1,22.9,"s"],["HFC Bites",261,23.9,10.2,18.0,"s"],["Healthy Fried Chicken Tenders",457,31.2,21.3,33.8,"s"],["Snack Slider",332,20.2,17.3,20.5,"s"],["2 Mini Potato Rosti",78,2.2,0.0,16.0,"s"],["Herbed Mayo Dip",217,0.7,22.9,2.6,"e"],["Chipotle Mayo Dip",213,0.5,22.6,2.2,"e"],["Tomato Relish Dip",36,0.2,0.3,7.3,"e"],["Classic Chocolate Shake",557,11.4,21.0,78.7,"d"],["Velvety Vanilla Shake",464,10.1,16.7,66.5,"d"],["Salted Caramel Shake",547,12.1,20.7,76.9,"d"],["Mini Shake",325,6.7,12.1,45.8,"d"],["Electric Dreams",146,0.1,0.0,35.5,"d"],["Mango Pash",111,0.3,0.3,25.8,"d"],["Strawberry Peachy Tea",204,0.5,0.3,31.6,"d"]]},"oporto":{"l":"Oporto","r":"oporto","i":[["Single Bondi Burger",627,26.9,39.3,47.7,"m"],["Double Bondi Burger",838,43.1,47.8,58.6,"m"],["Triple Bondi Burger",982,59.2,52.0,69.3,"m"],["Single Oprego Burger",540,25.0,28.0,48.0,"m"],["Double Oprego Burger",710,41.5,36.5,49.0,"m"],["Otropo Burger",710,43.0,37.0,51.0,"m"],["Halloumi Chicken Burger",700,44.0,39.0,44.0,"m"],["Crispy Chicken Strip Burger",686,28.0,38.0,56.0,"m"],["Schnitt Faced Burger",614,31.0,33.0,48.0,"m"],["Vegan Burger",574,14.5,26.0,68.0,"m"],["Chicken, Bacon & Egg Burger",753,35.0,38.0,56.0,"m"],["Porto Roll",678,31.0,33.0,58.0,"m"],["Chicken BLT Burger with Mayo",797,47.8,40.8,59.1,"m"],["1/4 Flame Grilled Chicken",365,44.0,19.5,1.5,"m"],["1/2 Flame Grilled Chicken",730,88.0,39.0,3.0,"m"],["Whole Flame Grilled Chicken",1460,176.0,78.0,6.0,"m"],["Grilled Chicken Tenders",260,38.0,10.5,2.0,"m"],["Grilled Chicken Rappa",620,42.0,28.0,49.0,"m"],["Crispy Chicken Rappa",730,32.0,37.0,67.0,"m"],["Bondi Rappa",805,43.6,37.8,72.5,"m"],["Halloumi & Chicken Rappa",773,41.4,37.9,71.5,"m"],["Pulled Chicken Rappa",709,38.5,22.3,84.7,"m"],["Vegan Rappa",613,14.7,21.0,85.9,"m"],["Chicken Rappsnacker",344,18.0,16.0,32.0,"m"],["Crispy Rappsnacker",412,16.0,22.0,38.0,"m"],["Pulled Chicken Rappsnacker",280,15.0,11.0,30.0,"m"],["Bondi Protein Bowl",700,52.0,31.0,53.0,"m"],["Pulled Chicken Bowl",595,45.0,22.0,54.0,"m"],["Halloumi & Avo Bowl",650,28.0,39.0,46.0,"m"],["Portuguese Salad with Chicken",380,37.0,21.0,8.5,"m"],["Chicken & Fetta Salad",465,38.2,24.8,19.8,"m"],["Spicy Chicken Bolas",351,18.2,19.5,24.8,"s"],["3 Jalapeño Bites",201,4.8,12.6,17.1,"s"],["Mozzarella Sticks",485,19.5,28.0,38.0,"s"],["Crispy Chicken Strips (3pc)",466,29.0,26.0,28.0,"s"],["Crispy Wings (3pc)",533,32.0,36.0,19.0,"s"],["Chips (small)",365,4.8,16.2,49.5,"s"],["Spicy Rice (small)",232,4.1,3.2,45.8,"s"],["Grilled Corn",103,3.5,1.8,16.5,"s"],["Portuguese Salad Side",31,1.2,0.3,5.4,"s"],["Crunchy Slaw",88,1.5,5.2,8.4,"s"],["Pita Bread & Garlic Dip",421,7.2,22.0,47.5,"s"],["Hash Brown",186,2.0,10.0,19.0,"s"],["BBQ Pulled Chicken Loaded Chips",714,21.0,32.7,68.0,"s"],["Chilli Cheese Chips",1025,16.0,51.0,126.0,"s"],["Chocolate Mousse",248,3.5,14.2,26.5,"x"],["Churros with Caramel (2pc)",285,3.0,13.0,38.0,"x"],["Salted Caramel Donut",100,1.8,5.1,11.9,"x"],["Original Chilli Sauce",146,0.5,13.8,4.8,"e"],["Garlic Dip",194,0.8,19.5,3.6,"e"],["Lemon & Herb Sauce",74,0.3,6.5,3.2,"e"],["Guacamole",59,0.7,5.1,2.9,"e"],["Pepsi",150,0.0,0.0,39.5,"d"],["Pepsi Max",2,0.1,0.0,0.1,"d"],["Solo",175,0.1,0.0,43.8,"d"],["Spring Water",0,0.0,0.0,0.0,"d"]]},"nandos":{"l":"Nando's","r":"nando","i":[["Quarter PERi-PERi Chicken",345,52.0,14.9,0.0,"m"],["Half PERi-PERi Chicken",690,104.0,29.8,1.1,"m"],["Whole PERi-PERi Chicken",1380,208.0,59.7,2.2,"m"],["4 PERi-PERi Tenders",220,39.6,6.5,0.7,"m"],["BBQ Chicken Ribs",284,21.0,14.2,18.0,"m"],["4 PERi-PERi Mini Drums",725,65.2,47.0,5.6,"m"],["PERinaise Classic Burger",496,41.0,16.9,42.5,"m"],["PERinaise Classic Wrap",520,42.5,18.0,45.0,"m"],["PERinaise Classic Pita",510,43.0,16.5,44.2,"m"],["Supremo Burger",585,46.2,24.1,43.8,"m"],["Supremo Wrap",610,47.5,25.5,46.5,"m"],["Supremo Pita",509,45.1,12.5,51.4,"m"],["Double Cheese & Bacon Burger",650,55.0,28.5,43.0,"m"],["Double Cheese & Bacon Wrap",667,54.6,34.9,32.3,"m"],["Avo Goodness Burger",565,42.0,22.0,46.0,"m"],["Avo Goodness Pita",509,41.6,13.7,52.6,"m"],["The Halloumi Burger",680,48.5,32.0,46.5,"m"],["The Halloumi Wrap",643,48.1,32.4,38.1,"m"],["Smoky Churrasco Burger",743,45.0,35.0,58.0,"m"],["Mediterranean Salad",415,8.1,30.2,14.8,"m"],["PERi-Harvest Bowl",421,9.9,22.6,26.7,"m"],["Paella",530,40.5,12.5,61.5,"m"],["Paella Grande",428,27.6,4.4,67.0,"m"],["PERi-PERi Chips",326,5.4,13.0,44.7,"s"],["Sweet Potato Chips",325,2.8,16.5,38.9,"s"],["Spicy Rice",324,7.1,1.7,68.5,"s"],["Corn on the Cob",240,7.8,9.7,26.6,"s"],["Garlic Bread",388,9.2,20.0,41.1,"s"],["Cheesy Garlic Mini Pita",297,8.9,17.1,26.3,"s"],["Pita Bread",259,9.3,1.0,50.8,"s"],["Halloumi Sticks & Dip",360,17.6,25.5,14.7,"s"],["Roasted Broccoli with PERi-crackle",339,11.4,30.3,3.2,"s"],["Coleslaw",226,1.3,21.2,6.4,"s"],["Garden Salad",42,1.4,2.0,3.6,"s"],["Avo Parmesan Crunch",259,10.5,20.6,7.1,"s"],["Snack Loaded Chips",542,29.0,20.8,56.6,"s"],["Grande Loaded Chips",988,41.1,38.6,113.0,"s"],["Chips & Dip",469,6.4,25.8,51.7,"s"],["Hummus with PERi Drizzle & Pita",623,15.1,35.3,57.5,"s"],["Naughty Nata (1)",169,3.0,8.5,20.5,"x"],["Naughty Natas (2)",338,5.2,12.8,50.6,"x"],["Chocolate Mousse",384,3.5,33.2,25.5,"x"],["PERinaise Chip Dip",143,1.0,12.8,7.0,"e"],["Chilli Jam Dip",75,0.2,0.1,18.0,"e"],["Coca-Cola 600ml",258,0.0,0.0,64.0,"d"],["Coca-Cola No Sugar 600ml",2,0.0,0.0,0.0,"d"],["Water 600ml",0,0.0,0.0,0.0,"d"]]},"carlsjr":{"l":"Carl's Jr","r":"carl.?s jr","i":[["Original Angus",620,29.0,36.0,44.0,"m"],["Double Original Angus",890,51.0,56.0,45.0,"m"],["Hawaiian Angus Burger",620,29.0,32.0,55.0,"m"],["Jalapeno Angus",640,29.0,40.0,42.0,"m"],["Western Bacon Angus",770,35.0,43.0,58.0,"m"],["Double Western Bacon Angus",1030,57.0,63.0,60.0,"m"],["Low Carb Angus",360,23.0,26.0,10.0,"m"],["The Big Carl",910,45.0,60.0,47.0,"m"],["Famous Star with Cheese",610,28.0,32.0,50.0,"m"],["Super Star with Cheese",850,46.0,52.0,51.0,"m"],["California Classic",650,28.0,44.0,36.0,"m"],["Western Bacon Burger with Cheese",750,34.0,39.0,64.0,"m"],["Cheeseburger",340,16.0,16.0,32.0,"m"],["Double Cheeseburger",450,25.0,24.0,33.0,"m"],["Chicken Fillet Sandwich",420,22.0,20.0,37.0,"m"],["Chicken Fillet BLT Sandwich",470,24.0,24.0,39.0,"m"],["Hawaiian Chicken Fillet",490,25.0,19.0,53.0,"m"],["Veggie Star with Cheese",640,17.0,26.0,81.0,"m"],["Chicken Tenders (3)",250,25.0,12.0,11.0,"m"],["Chicken Star Nuggets",300,15.0,16.0,26.0,"m"],["Crispy Chicken Salad",260,21.0,14.0,12.0,"m"],["Breakfast Burger",780,39.0,43.0,57.0,"m"],["Bacon, Egg & Cheese Roll",390,19.0,20.0,31.0,"m"],["Beef, Egg & Cheese Roll",620,40.0,38.0,30.0,"m"],["Hearty Bacon Platter",840,29.0,44.0,81.0,"m"],["Pancakes",550,11.0,16.0,88.0,"m"],["Side Salad",90,5.0,5.0,6.0,"s"],["Potato Bites (small)",190,2.0,11.0,18.0,"s"],["Natural Cut Fries (small)",280,4.0,12.0,37.0,"s"],["Chili Cheese Fries",730,23.0,36.0,74.0,"s"],["Waffle Fries",360,5.0,18.0,40.0,"s"],["Onion Rings",340,6.0,19.0,34.0,"s"],["Jalapeno Poppers",350,13.0,18.0,32.0,"s"],["Chocolate Chip Cookie",180,2.0,7.0,26.0,"x"],["Ice-cream Sandwich",236,3.0,10.0,33.0,"x"],["Chocolate Sundae",330,5.0,14.0,44.0,"x"],["Strawberry Sundae",320,5.0,14.0,43.0,"x"],["Oreo Sundae",390,6.0,16.0,54.0,"x"],["Chocolate Shake",630,13.0,31.0,72.0,"d"],["Vanilla Shake",640,13.0,31.0,74.0,"d"],["Strawberry Shake",620,13.0,31.0,71.0,"d"],["Oreo Shake",770,16.0,38.0,90.0,"d"],["Coke (small)",151,0.0,0.0,37.0,"d"],["Coke Zero Sugar",1,0.0,0.0,0.0,"d"],["Sprite (small)",100,0.0,0.0,24.0,"d"],["Water",0,0.0,0.0,0.0,"d"],["Flat White",130,7.0,7.0,10.0,"d"],["Mocha",170,8.0,7.0,17.0,"d"],["Ranch",213,0.5,23.0,3.0,"e"],["Santa Fe Sauce",153,0.5,16.0,2.0,"e"],["BBQ Sauce",66,1.0,0.5,14.0,"e"]]},"dominos":{"l":"Domino's","r":"domino","i":[["Margherita (2 slices)",232,10.0,6.2,32.8,"m"],["Simply Cheese (2 slices)",254,11.6,8.0,32.8,"m"],["Pepperoni (2 slices)",274,12.0,10.2,32.8,"m"],["Ham & Cheese (2 slices)",246,12.0,6.6,33.4,"m"],["Hawaiian (2 slices)",262,12.2,6.2,37.2,"m"],["BBQ Sausage & Onion (2 slices)",256,10.0,7.6,36.2,"m"],["Double Beef & Onion (2 slices)",288,13.4,8.8,37.6,"m"],["Spicy Veg Supreme (2 slices)",250,10.4,6.8,34.6,"m"],["Godfather (2 slices)",292,12.0,11.6,33.8,"m"],["Hot Honey Pepperoni (2 slices)",272,10.4,8.4,36.4,"m"],["Loaded Pepperoni (2 slices)",292,12.4,11.6,32.8,"m"],["BBQ Meatlovers (2 slices)",306,13.6,11.2,36.8,"m"],["Vegorama (2 slices)",240,10.4,6.8,33.0,"m"],["Supreme (2 slices)",294,13.2,10.8,34.2,"m"],["Double Bacon Cheeseburger (2 slices)",328,14.6,12.4,38.8,"m"],["Chicken Supreme (2 slices)",252,12.0,6.6,34.4,"m"],["Butter Chicken (2 slices)",272,12.6,7.0,34.2,"m"],["Mega Meatlovers (2 slices)",346,16.2,13.2,39.6,"m"],["Peri Peri Chicken (2 slices)",284,12.6,9.0,36.0,"m"],["Garlic Prawn (2 slices)",252,12.0,7.8,32.0,"m"],["BBQ Chicken & Bacon (2 slices)",302,14.2,10.6,36.8,"m"],["Chicken & Camembert (2 slices)",348,14.8,16.0,34.0,"m"],["The Lot (2 slices)",380,15.6,18.8,35.8,"m"],["Philly Cheesesteak (2 slices)",252,13.2,7.0,33.0,"m"],["Steak Carnivore (2 slices)",298,14.2,11.8,32.0,"m"],["Super Spicy Lovers (2 slices)",394,17.2,14.6,45.4,"m"],["Vegan Margherita (2 slices)",236,5.0,5.6,37.0,"m"],["Mega Topped Godfather (2 slices)",364,14.6,16.8,37.4,"m"],["Margherita (4 slices)",464,20.0,12.4,65.6,"m"],["Pepperoni (4 slices)",548,24.0,20.4,65.6,"m"],["Hawaiian (4 slices)",524,24.4,12.4,74.4,"m"],["BBQ Meatlovers (4 slices)",612,27.2,22.4,73.6,"m"],["Supreme (4 slices)",588,26.4,21.6,68.4,"m"],["Peri Peri Chicken (4 slices)",568,25.2,18.0,72.0,"m"],["New Yorker The Big Cheese (1 slice)",345,17.4,14.5,35.1,"m"],["New Yorker Pepperoni Boss (1 slice)",335,15.6,14.2,35.0,"m"],["New Yorker Little Italy (1 slice)",358,17.3,15.7,35.5,"m"],["New Yorker Bacon Kingpin (1 slice)",355,16.0,17.3,33.3,"m"],["Saucy Chicken Wings",374,34.0,24.4,5.0,"m"],["Saucy Wings",520,38.3,27.4,29.9,"m"],["Saucy Chicken Tenders",325,23.1,15.2,23.6,"m"],["Chicken Tenders",424,23.2,15.2,47.8,"m"],["Chicken Nuggets (6)",277,17.4,15.7,16.7,"m"],["Southern Fried Chicken Bites (20)",304,18.5,18.9,14.8,"m"],["Garlic Bread",532,12.1,21.4,70.4,"s"],["Cheesy Garlic Bread",669,22.7,32.2,70.6,"s"],["Cheese & Garlic Scrolls (4)",648,21.2,25.2,82.4,"s"],["Pepperoni Stuffed Cheesy Bread",606,24.6,26.9,65.7,"s"],["Triple Cheese Bites (5)",295,13.1,16.3,24.0,"s"],["Mozzarella Cheese Twists",150,5.8,6.8,15.7,"s"],["Crispy Chips",487,6.3,25.2,47.7,"s"],["Onion Rings",215,3.3,13.7,21.0,"s"],["Garlic Aioli",109,0.3,12.1,2.0,"e"],["Sriracha Mayo",101,0.4,11.1,2.2,"e"],["Marinara Sauce",33,1.0,0.0,6.3,"e"],["Chocolate Lava Cake",399,4.3,20.9,48.4,"x"],["Hot Choc Fudge Brownies",555,5.4,31.3,61.9,"x"],["Mini Dutch Pancakes (12)",551,6.8,39.7,41.8,"x"],["Salted Caramel Chocolate Mousse",382,2.9,25.4,33.8,"x"],["Churros with Choc Sauce (4)",547,5.5,30.2,62.0,"x"],["Pistachio Papi Lava Cake",479,5.5,27.8,51.2,"x"],["Vanilla Thickshake",797,10.5,38.5,102.0,"d"],["Chocolate Thickshake",799,11.0,38.6,101.0,"d"],["Salted Caramel Thickshake",748,6.6,30.6,104.0,"d"]]},"boost":{"l":"Boost Juice","r":"boost juice|\\bboost\\b","i":[["Banana Buzz",337,13.1,4.1,60.4,"d"],["Blue Honolulu",319,6.2,3.5,65.1,"d"],["Green Tea Mango Mantra",337,4.5,2.5,74.2,"d"],["Lychee Crush",231,1.6,0.3,56.0,"d"],["Mango & Co",451,2.8,15.0,75.3,"d"],["Mango Magic",325,6.1,3.8,66.1,"d"],["Mango Tango Crush",262,2.3,0.5,61.4,"d"],["Passion Mango",333,5.2,2.5,72.3,"d"],["Tropical Crush",203,1.8,0.4,48.9,"d"],["Watermelon Crush",176,1.6,0.6,41.7,"d"],["All Berry Bang",262,5.6,3.7,54.3,"d"],["Berry Crush",219,1.2,0.4,50.8,"d"],["Berry Peachy",260,2.0,0.4,61.3,"d"],["Pink Lemonade",200,1.5,0.5,46.8,"d"],["Strawberry Squeeze",290,5.9,3.8,60.3,"d"],["Bananas For Choc",450,8.5,18.8,59.7,"d"],["Coffee Dream",350,14.0,4.2,62.4,"d"],["Cookies & Creme",384,11.9,6.6,68.9,"d"],["King William Chocolate",333,13.6,4.9,56.9,"d"],["Choc Muscle Hustle",357,16.8,6.3,55.4,"d"],["Energy Lift",322,6.5,3.8,65.5,"d"],["Gym Junkie",279,14.0,3.7,46.9,"d"],["Peanut Butter Protein",528,30.0,20.0,55.0,"d"],["Power Plant Protein",224,7.9,1.5,40.7,"d"],["Protein Supreme",340,20.3,6.1,47.1,"d"],["Wondermelon",156,10.2,1.9,23.0,"d"],["Brekkie to Go-Go",419,16.4,7.4,68.4,"d"],["Mornin' Mocha",359,16.2,4.1,63.0,"d"],["Strawbrekkie",321,16.6,4.5,52.8,"d"],["Energiser Juice",158,2.5,0.5,34.2,"d"],["Ginger Zing",131,2.8,0.5,27.7,"d"],["Immunity Juice",114,1.8,0.7,23.9,"d"],["Melon Moment",144,1.3,0.5,32.1,"d"],["Mint Condition",107,1.4,0.2,23.9,"d"],["Wild Berry Juice",168,1.6,0.4,38.4,"d"],["Cookie Dough",429,8.2,17.5,58.6,"d"],["Blue Hydrate",375,4.0,12.0,60.0,"d"],["Too Good To Be Green",227,3.0,1.0,48.0,"d"],["Banana Bread Slice",404,5.9,16.6,55.6,"x"],["Chocolate Protein Ball",203,5.9,15.2,10.8,"x"],["Cookies & Cream Protein Ball",189,5.8,13.1,11.8,"x"],["Hazelnut Protein Ball",197,6.3,14.5,10.6,"x"]]},"donutking":{"l":"Donut King","r":"donut king","i":[["Cinnamon Donut",133,2.3,3.6,22.0,"x"],["Mini Cinnamon Donut (each)",59,0.9,1.7,9.8,"x"],["Iced Ring Donut",247,3.3,10.7,33.9,"x"],["Iced Cake Donut",183,2.3,3.6,34.3,"x"],["Classic Cinnamon Scroll",388,6.2,19.0,46.6,"x"],["Cinnamon Sugar Cronut",339,4.7,18.4,37.9,"x"],["Jam Ball",282,3.7,12.4,38.3,"x"],["Custard Ball",256,3.7,13.5,28.6,"x"],["Hazelnut Ball (Nutella)",345,5.0,18.6,39.1,"x"],["Choc Iced Custard & Cream Éclair",334,3.4,17.6,39.7,"x"],["Cookies & Cream Crunch",437,4.4,19.7,59.5,"x"],["Choc Caramel Sea Salt",283,3.3,10.7,42.5,"x"],["Strawberries & Cream",386,3.9,17.1,53.5,"x"],["Spiced Cookie Crumble (Biscoff)",462,4.7,26.6,50.5,"x"],["Chocolate Sundae",278,3.8,1.9,60.1,"x"],["Warm Cinnamon Donut Sundae",387,4.7,4.9,79.4,"x"],["Malteser Mixer",354,5.3,8.8,62.8,"x"],["Twix Mixer",361,5.2,9.4,62.7,"x"],["Beef Pie",532,18.9,26.9,50.4,"m"],["Beef Curry Pie",542,19.5,27.7,50.4,"m"],["Beef & Mushroom Pie",602,17.4,25.8,50.4,"m"],["Beef Pastie",447,10.4,24.1,44.3,"m"],["Regular Hot Dog",347,16.1,11.4,43.6,"m"],["Aussie Hot Dog",503,25.9,23.0,46.6,"m"],["Ham & Cheese Toastie",416,18.5,19.2,40.3,"m"],["Chicken, Cheese & Avo Toastie",469,19.6,24.1,40.8,"m"],["Cappuccino",124,6.6,6.6,9.4,"d"],["Flat White",136,7.3,7.3,10.3,"d"],["Latte",140,7.5,7.5,10.6,"d"],["Mocha",216,8.4,8.0,26.6,"d"],["Hot Chocolate",218,8.5,8.1,26.7,"d"],["Chai Latte",232,8.2,9.6,27.9,"d"],["Long Black",0,0.1,0.1,0.1,"d"],["Chocolate Milkshake",256,7.1,6.5,41.2,"d"],["Chocolate Thickshake",394,8.8,6.5,73.5,"d"],["Coffee Frappe",408,8.7,12.9,63.5,"d"],["Cookies & Cream Frappe",721,11.6,19.1,124.0,"d"],["Iced Coffee",336,10.4,14.5,40.6,"d"],["Iced Chocolate",385,10.6,14.6,51.8,"d"]]},"chatime":{"l":"Chatime","r":"chatime","i":[["Premium Milk Tea",339,1.9,12.8,54.0,"d"],["Premium Pearl Milk Tea",476,2.2,12.9,87.8,"d"],["Roasted Milk Tea",339,1.9,11.2,57.6,"d"],["Taro Milk Tea",476,2.1,14.6,84.1,"d"],["Brown Sugar Milk Tea",468,4.8,12.5,84.1,"d"],["Chocolate Milk Tea",457,3.2,18.5,69.4,"d"],["Matcha Latte",192,2.8,5.7,32.4,"d"],["Strawberry Matcha Latte",308,4.0,8.4,54.1,"d"],["Honeydew Milk Tea",370,1.6,11.8,64.4,"d"],["Thai Milk Tea",545,3.5,17.6,93.2,"d"],["Coconut Milk Tea",480,2.3,17.2,79.0,"d"],["White Peach Oolong Milk Tea",236,2.0,2.4,51.6,"d"],["Lychee Fruity Green Tea",159,0.5,0.5,38.1,"d"],["Mango Fruity Green Tea",182,0.5,0.2,44.5,"d"],["Peach Fruity Green Tea",130,0.4,0.2,31.7,"d"],["Passionfruit Fruity Green Tea",186,0.5,0.1,45.8,"d"],["Grapefruit Fruity Green Tea",184,0.7,0.3,44.6,"d"],["Lemon Fruity Green Tea",177,0.5,0.5,42.6,"d"],["Mango Madness",229,1.4,0.7,54.3,"d"],["White Peach Fruit Tea",112,0.7,0.3,26.6,"d"],["Jasmine Green Tea",127,0.1,0.0,31.6,"d"],["Roasted Oolong Tea",121,0.1,0.0,30.1,"d"],["Premium Pearl Frozen",667,2.9,17.1,125.4,"d"],["Taro Frozen",452,1.8,12.7,82.6,"d"],["Mango Frozen",335,0.7,0.3,82.4,"d"],["Strawberry Frozen",292,0.7,0.3,71.6,"d"],["Passionfruit Sparkling",186,1.2,0.6,43.9,"d"],["Tapioca Pearls (add-on)",181,0.3,0.2,44.5,"e"],["Aloe Vera (add-on)",34,0.1,0.0,8.4,"e"],["Popping Pearls (add-on)",46,0.1,0.0,11.4,"e"],["Custard Pudding (add-on)",72,1.5,2.0,12.0,"e"],["Cream Mousse (add-on)",98,0.9,9.0,3.4,"e"]]},"sushihub":{"l":"Sushi Hub","r":"sushi hub|sushi sushi|sushi train|sushi bay","i":[["Salmon Avocado Roll",280,9.0,10.0,38.0,"m",1],["Chicken Teriyaki Roll",300,12.0,6.0,48.0,"m",1],["Tuna Roll",250,10.0,4.0,42.0,"m",1],["Salmon Nigiri (6)",300,16.0,6.0,42.0,"m",1],["Chicken Katsu Roll",330,11.0,10.0,48.0,"m",1],["Sashimi (10 pc)",250,35.0,10.0,0.0,"m",1],["Edamame",190,17.0,8.0,12.0,"s",1],["Miso Soup",40,3.0,1.0,5.0,"s",1]]}};
+for(const k in CH){CH[k].re=new RegExp(CH[k].r,'i');CH[k].items=CH[k].i.map(a=>({n:a[0],k:a[1],p:a[2],f:a[3],c:a[4],t:a[5],e:!!a[6]}))}
+
+/* ======================= typical dishes by cuisine (estimates) ======================= */
+const SD=['Soft drink 375ml',160,0,0,40,'d'],WATER=['Water',0,0,0,0,'d'];
+const GEN={
+ pizza:[['2 slices Margherita',500,20,18,62,'m'],['2 slices Pepperoni',600,24,26,62,'m'],['2 slices Supreme',620,26,27,64,'m'],['2 slices BBQ Chicken',580,30,20,66,'m'],['Garlic Bread',350,8,15,45,'s'],['Garden Salad',120,3,8,9,'s'],['Chicken Wings (6)',450,35,30,8,'s'],['Tiramisu',420,7,25,40,'x'],['Nutella Pizza (2 slices)',550,9,22,78,'x'],SD,WATER],
+ burger:[['Beef Burger',650,32,33,50,'m'],['Cheeseburger',700,36,38,50,'m'],['Grilled Chicken Burger',550,36,20,50,'m'],['Double Cheeseburger',900,52,55,45,'m'],['Burger, lettuce-wrapped',400,30,28,6,'m'],['Chips',400,5,18,52,'s'],['Sweet Potato Fries',380,4,17,50,'s'],['Onion Rings',350,4,20,38,'s'],['Side Salad',90,3,5,8,'s'],['Thickshake',600,14,20,90,'d'],SD,['Brownie',400,5,22,48,'x']],
+ thai:[['Chicken Pad Thai',750,28,28,90,'m'],['Pad See Ew Chicken',780,30,26,100,'m'],['Green Curry Chicken',500,30,32,18,'m'],['Massaman Beef',650,30,40,35,'m'],['Chicken Cashew Stir-fry',550,35,25,40,'m'],['Larb Gai Salad',300,30,14,10,'m'],['Basil Chicken Stir-fry',480,32,24,25,'m'],['Tom Yum Soup',200,18,8,10,'s'],['Jasmine Rice',300,6,1,66,'s'],['Curry Puffs (2)',280,5,16,28,'s'],['Fresh Spring Rolls (2)',200,8,4,32,'s'],['Mango Sticky Rice',450,5,14,75,'x'],['Thai Iced Tea',250,3,8,42,'d'],SD],
+ chinese:[['Beef & Broccoli',450,35,20,25,'m'],['Kung Pao Chicken',550,35,30,30,'m'],['Sweet & Sour Pork',700,25,30,85,'m'],['Honey Chicken',750,28,30,90,'m'],['Mongolian Lamb',550,32,30,30,'m'],['Salt & Pepper Squid',500,25,28,35,'m'],['Steamed Fish with Ginger',350,40,15,8,'m'],['Steamed Rice',300,6,1,66,'s'],['Fried Rice',550,15,18,80,'s'],['Steamed Dumplings (6)',330,16,10,42,'s'],['Spring Rolls (2)',260,5,14,28,'s'],['Bok Choy with Garlic',90,3,5,8,'s'],['Lychees & Ice Cream',250,3,8,42,'x'],['Jasmine Tea',0,0,0,0,'d'],SD],
+ japanese:[['Chicken Teriyaki Don',700,38,16,95,'m'],['Salmon Teriyaki Don',720,35,22,90,'m'],['Chicken Katsu Curry',950,38,38,110,'m'],['Beef Gyudon',750,30,25,95,'m'],['Sashimi (10 pc)',250,35,10,0,'m'],['Salmon Nigiri (6)',300,16,6,42,'m'],['Gyoza (6)',300,12,14,30,'s'],['Edamame',190,17,8,12,'s'],['Miso Soup',40,3,1,5,'s'],['Seaweed Salad',120,2,7,12,'s'],['Karaage (5 pc)',400,25,25,18,'s'],['Steamed Rice',300,6,1,66,'s'],['Mochi Ice Cream (2)',200,3,5,36,'x'],['Matcha Latte',200,7,6,28,'d'],['Green Tea',0,0,0,0,'d']],
+ sushi:[['Salmon Avocado Roll',280,9,10,38,'m'],['Chicken Teriyaki Roll',300,12,6,48,'m'],['Tuna Roll',250,10,4,42,'m'],['Salmon Nigiri (6)',300,16,6,42,'m'],['Sashimi (10 pc)',250,35,10,0,'m'],['Inari (2)',220,5,6,36,'s'],['Edamame',190,17,8,12,'s'],['Miso Soup',40,3,1,5,'s'],['Green Tea',0,0,0,0,'d']],
+ ramen:[['Tonkotsu Ramen',850,35,38,85,'m'],['Shoyu Ramen',600,30,18,80,'m'],['Spicy Miso Ramen',800,32,32,90,'m'],['Gyoza (6)',300,12,14,30,'s'],['Karaage (5 pc)',400,25,25,18,'s'],['Edamame',190,17,8,12,'s'],['Extra Egg',80,6,5,1,'e']],
+ vietnamese:[['Beef Pho',450,30,8,60,'m'],['Chicken Pho',420,30,6,58,'m'],['Pork Banh Mi',550,25,20,65,'m'],['Lemongrass Chicken Banh Mi',520,30,16,64,'m'],['Chicken Vermicelli Bowl',600,30,16,78,'m'],['Broken Rice + Pork Chop',750,35,25,95,'m'],['Rice Paper Rolls (2)',250,15,5,35,'s'],['Spring Rolls (2)',260,8,14,26,'s'],['Vietnamese Iced Coffee',220,4,6,38,'d'],['Che (sweet soup)',300,5,8,52,'x']],
+ korean:[['Beef Bulgogi + rice',700,35,20,90,'m'],['Bibimbap',650,25,18,90,'m'],['Korean Fried Chicken (6 pc)',900,45,55,50,'m'],['Tteokbokki',600,10,12,110,'m'],['Kimchi Fried Rice',600,15,20,85,'m'],['Japchae',400,10,14,60,'s'],['Kimchi',30,1,0,5,'s'],['Steamed Rice',300,6,1,66,'s'],['Bingsu',450,8,12,78,'x'],SD],
+ indian:[['Tandoori Chicken (half)',450,55,20,8,'m'],['Chicken Tikka (entrée)',350,40,15,6,'m'],['Butter Chicken',550,35,35,20,'m'],['Lamb Rogan Josh',500,35,30,18,'m'],['Chicken Biryani',750,35,25,90,'m'],['Chana Masala',400,15,15,50,'m'],['Dal Tadka',300,15,8,40,'m'],['Palak Paneer',450,20,32,15,'m'],['Basmati Rice',300,6,1,66,'s'],['Plain Naan',260,8,5,45,'s'],['Garlic Naan',350,9,10,55,'s'],['Roti',120,4,3,20,'s'],['Raita',80,4,4,6,'s'],['Vegetable Samosas (2)',300,6,16,34,'s'],['Gulab Jamun (2)',300,4,12,45,'x'],['Mango Lassi',250,8,5,42,'d'],['Masala Chai',120,4,4,16,'d']],
+ nepalese:[['Chicken Momo (10)',450,28,16,48,'m'],['Dal Bhat',600,20,12,100,'m'],['Chicken Chow Mein',650,28,22,80,'m'],['Thukpa',450,25,10,60,'m'],['Chicken Choila',350,35,18,8,'m'],['Steamed Rice',300,6,1,66,'s'],['Masala Tea',120,4,4,16,'d']],
+ mexican:[['Chicken Burrito Bowl',550,40,18,55,'m'],['Chicken Burrito',750,42,24,88,'m'],['2 Chicken Tacos',420,26,16,40,'m'],['Beef Quesadilla',600,32,32,40,'m'],['Nachos',1000,40,55,90,'m'],['Mexican Rice',250,5,6,44,'s'],['Black Beans',150,8,2,26,'s'],['Corn Chips & Guac',500,6,32,48,'s'],['Street Corn',180,5,8,20,'s'],['Churros',400,6,20,48,'x'],SD],
+ kebab:[['Chicken Shish Plate (salad)',500,50,25,15,'m'],['Chicken Kebab Wrap',650,40,25,60,'m'],['Lamb Kebab Wrap',800,35,40,65,'m'],['Mixed Kebab Wrap',750,38,35,62,'m'],['Falafel Wrap',600,18,25,75,'m'],['Meat Pide',700,35,25,80,'m'],['HSP (small)',1100,50,60,80,'m'],['Chips',400,5,18,52,'s'],['Hummus & Bread',400,12,20,44,'s'],['Tabouli',150,3,10,12,'s'],['Garlic Dip',150,1,16,2,'e'],['Baklava (1 pc)',250,4,15,26,'x'],['Ayran',90,5,4,7,'d'],SD],
+ afghan:[['Kabuli Pulao',850,35,30,110,'m'],['Lamb Kebab Plate',650,45,35,35,'m'],['Mantu (dumplings)',550,25,22,60,'m'],['Chicken Tikka Kebab + bread',600,45,20,55,'m'],['Bolani',350,8,15,45,'s'],['Afghan Bread',300,9,3,58,'s'],['Firni',250,6,8,38,'x'],['Green Tea',0,0,0,0,'d']],
+ greek:[['Chicken Souvlaki Wrap',550,35,20,55,'m'],['Lamb Souvlaki Plate',800,45,40,60,'m'],['Chicken Gyros Plate',900,50,40,80,'m'],['Moussaka',650,28,40,40,'m'],['Grilled Octopus',350,35,18,8,'m'],['Greek Salad',300,8,25,12,'s'],['Lemon Potatoes',300,4,14,40,'s'],['Pita & Tzatziki',300,9,10,42,'s'],['Baklava',250,4,15,26,'x'],['Loukoumades',400,5,20,50,'x'],['Greek Frappé',150,3,5,22,'d']],
+ italian:[['Spaghetti Bolognese',750,35,22,95,'m'],['Carbonara',900,32,45,90,'m'],['Chicken Parmigiana',800,55,40,45,'m'],['Lasagne',700,35,35,55,'m'],['Gnocchi Napoletana',650,15,15,110,'m'],['Grilled Chicken Salad',400,38,20,15,'m'],['Margherita Pizza (half)',550,22,20,68,'m'],['Garlic Bread',350,8,15,45,'s'],['Rocket & Parmesan Salad',180,7,14,4,'s'],['Chips',400,5,18,52,'s'],['Tiramisu',420,7,25,40,'x'],['Gelato (2 scoops)',280,5,12,38,'x'],['Affogato',200,5,9,24,'x'],['Espresso',2,0,0,0,'d']],
+ fish_and_chips:[['Grilled Fish + salad',350,35,15,10,'m'],['Battered Fish (1 pc)',450,25,25,30,'m'],['Grilled Barramundi',300,40,12,0,'m'],['Calamari (6 rings)',350,15,18,30,'m'],['Prawn Cutlets (4)',300,15,15,25,'m'],['Hamburger with the lot',750,38,38,55,'m'],['Chips (small)',400,5,18,52,'s'],['Potato Scallop',200,3,10,25,'s'],['Dim Sim',120,5,6,12,'s'],['Garden Salad',100,2,6,8,'s'],['Tartare Sauce',90,0,9,2,'e'],SD],
+ chicken:[['1/4 Charcoal Chicken',330,40,18,1,'m'],['1/2 Charcoal Chicken',650,75,38,2,'m'],['Chicken Roll',500,28,20,50,'m'],['Chicken Burger',550,32,24,50,'m'],['Chips',400,5,18,52,'s'],['Garden Salad',100,2,6,8,'s'],['Coleslaw',150,1,12,10,'s'],['Roast Potatoes',250,4,10,36,'s'],['Tabouli',150,3,10,12,'s'],['Gravy',50,1,1,9,'e'],SD],
+ cafe:[['Bacon & Egg Roll',450,24,20,40,'m'],['Smashed Avo + poached egg',500,18,28,45,'m'],['Big Breakfast',1000,50,60,60,'m'],['Eggs Benedict',650,28,40,40,'m'],['Chicken Caesar Salad',500,35,30,20,'m'],['Chicken Club Sandwich',600,35,28,50,'m'],['Acai Bowl',450,8,12,75,'m'],['Toast with butter',250,7,10,32,'s'],['Hash Brown',150,2,9,15,'s'],['Fruit Salad',120,2,0,28,'s'],['Banana Bread',400,6,18,55,'x'],['Muffin',450,6,20,60,'x'],['Croissant',280,5,15,30,'x'],['Flat White',150,8,8,11,'d'],['Cappuccino',130,7,7,10,'d'],['Latte',170,9,9,13,'d'],['Long Black',5,0,0,0,'d'],['Iced Latte',180,9,8,16,'d'],['Iced Chocolate',400,10,18,50,'d'],['Chai Latte',200,8,7,28,'d'],['Fresh OJ',150,2,0,34,'d'],['Smoothie',300,8,4,58,'d']],
+ bakery:[['Meat Pie',450,14,25,40,'m'],['Chunky Steak Pie',480,18,26,42,'m'],['Sausage Roll',350,10,22,28,'m'],['Ham & Cheese Croissant',400,16,22,32,'m'],['Chicken & Salad Roll',450,25,15,50,'m'],['Spinach & Ricotta Roll',350,10,20,32,'m'],['Croissant',280,5,15,30,'x'],['Vanilla Slice',400,5,18,55,'x'],['Lamington',250,3,10,38,'x'],['Custard Tart',300,5,16,34,'x'],['Iced Coffee',250,8,9,32,'d'],['Flat White',150,8,8,11,'d']],
+ sandwich:[['Chicken Salad Sandwich',400,28,12,42,'m'],['Ham, Cheese & Tomato Toastie',450,22,20,42,'m'],['BLT',500,20,25,45,'m'],['Tuna Salad Wrap',380,25,12,40,'m'],['Side Salad',90,3,5,8,'s'],['Cookie',220,2,10,30,'x'],['Flat White',150,8,8,11,'d']],
+ steak_house:[['Rump Steak 300g',550,65,32,0,'m'],['Scotch Fillet 300g',700,60,50,0,'m'],['Chicken Schnitzel',650,45,30,45,'m'],['Mixed Grill',1000,80,70,5,'m'],['Chips',400,5,18,52,'s'],['Mash',250,4,12,32,'s'],['Garden Salad',100,2,6,8,'s'],['Steamed Veg',100,4,3,14,'s'],['Pepper Sauce',80,1,6,5,'e'],['Sticky Date Pudding',550,5,25,75,'x'],SD],
+ malaysian:[['Nasi Lemak with Chicken',850,35,40,90,'m'],['Char Kway Teow',750,25,32,90,'m'],['Laksa',750,30,45,55,'m'],['Chicken Satay (6) + rice',650,40,25,65,'m'],['Mee Goreng',700,22,25,95,'m'],['Hainanese Chicken Rice',650,35,22,75,'m'],['Roti Canai + curry',500,10,25,55,'s'],['Teh Tarik',200,5,6,32,'d'],['Cendol',350,3,15,52,'x']],
+ filipino:[['Chicken Adobo + rice',700,38,25,80,'m'],['Pork Sisig + rice',850,35,45,75,'m'],['Lechon Kawali + rice',950,35,60,70,'m'],['Pancit',550,22,15,80,'m'],['Lumpia (4)',300,10,16,28,'s'],['Garlic Rice',350,6,6,66,'s'],['Halo-Halo',450,6,10,85,'x'],['Leche Flan',300,8,10,45,'x']],
+ spanish:[['Paella (serve)',700,35,20,90,'m'],['Garlic Prawns',350,30,22,5,'m'],['Chorizo & Potato',500,20,30,35,'m'],['Patatas Bravas',400,5,22,45,'s'],['Croquetas (3)',300,10,16,28,'s'],['Churros with Chocolate',450,6,22,55,'x']],
+ african:[['Jollof Rice with Chicken',800,38,25,100,'m'],['Doro Wat + Injera',750,40,30,75,'m'],['Lamb Tagine + couscous',750,40,30,75,'m'],['Injera',200,6,1,42,'s'],['Fried Plantain',250,2,10,40,'s']],
+ french:[['Croque Monsieur',550,28,32,38,'m'],['Steak Frites',900,50,55,55,'m'],['Chicken Crêpe',500,28,24,42,'m'],['French Onion Soup',400,15,20,38,'s'],['Croissant',280,5,15,30,'x'],['Crème Brûlée',350,5,25,28,'x']],
+ vegetarian:[['Buddha Bowl',550,20,22,65,'m'],['Falafel Plate',600,20,28,65,'m'],['Veggie Burger',550,18,22,65,'m'],['Lentil Curry + rice',600,20,12,100,'m'],['Tofu Stir-fry',450,22,20,45,'m'],['Sweet Potato Fries',380,4,17,50,'s'],['Green Salad',120,4,8,8,'s'],['Raw Slice',300,5,18,30,'x'],['Green Smoothie',250,6,4,48,'d']],
+ poke:[['Salmon Poke Bowl',650,32,22,75,'m'],['Chicken Poke Bowl',600,38,16,72,'m'],['Tofu Poke Bowl',550,20,18,75,'m'],['Edamame',190,17,8,12,'s'],['Miso Soup',40,3,1,5,'s'],['Kombucha',60,0,0,14,'d']],
+ bbq:[['Brisket Plate',700,55,45,10,'m'],['Pulled Pork Roll',600,35,22,60,'m'],['Smoked Chicken Half',650,70,38,2,'m'],['Mac & Cheese',450,15,22,45,'s'],['Coleslaw',150,1,12,10,'s'],['Cornbread',250,4,10,35,'s'],['BBQ Sauce',60,0,0,14,'e']],
+ hot_dog:[['Classic Hot Dog',350,14,18,32,'m'],['Chilli Cheese Dog',550,22,30,45,'m'],['Fries',400,5,18,52,'s'],SD],
+ wings:[['Buffalo Wings (6)',550,40,38,8,'m'],['Boneless Wings (8)',650,40,30,50,'m'],['Fries',400,5,18,52,'s'],['Celery & Blue Cheese',150,2,14,4,'s']],
+ ice_cream:[['Gelato 1 scoop',150,3,6,22,'x'],['Gelato 2 scoops',300,5,12,44,'x'],['Waffle Cone 2 scoops',420,6,15,66,'x'],['Sundae',450,7,20,60,'x'],['Affogato',200,5,9,24,'x'],['Milkshake',500,12,18,72,'d']],
+ frozen_yogurt:[['Froyo small + fruit',250,6,3,50,'x'],['Froyo medium + toppings',450,9,10,80,'x']],
+ dessert:[['Waffles with ice cream',650,10,30,85,'x'],['Nutella & banana crêpe',550,10,25,72,'x'],['Brownie with ice cream',600,7,32,70,'x'],['Cheesecake slice',450,7,30,38,'x'],['Cookie',220,2,10,30,'x'],['Thickshake',600,14,20,90,'d'],['Hot Chocolate',250,9,9,32,'d']],
+ donut:[['Glazed Donut',250,3,12,32,'x'],['Filled Donut',320,4,15,42,'x'],['Cinnamon Donut',230,3,11,30,'x'],['Iced Coffee',250,8,9,32,'d']],
+ bubble_tea:[['Milk Tea + pearls (reg)',450,3,12,82,'d'],['Fruit Tea (reg)',180,0,0,44,'d'],['Brown Sugar Milk (reg)',480,6,13,85,'d'],['Taro Milk Tea',470,2,14,84,'d'],['Matcha Latte',220,4,6,36,'d'],['Popcorn Chicken',400,22,24,24,'m']],
+ juice:[['Fresh Orange Juice',180,3,0,40,'d'],['Green Juice',120,3,0,26,'d'],['Berry Smoothie',300,7,3,62,'d'],['Protein Smoothie',350,25,6,48,'d'],['Acai Bowl',450,8,12,75,'m']],
+ _restaurant:[['Grilled protein + salad',450,40,22,15,'m'],['Typical main meal',750,32,30,80,'m'],['Pasta / rice main',800,25,25,110,'m'],['Side salad',120,3,8,9,'s'],['Chips',400,5,18,52,'s'],['Dessert',450,6,22,55,'x'],SD],
+ _fast_food:[['Burger',600,28,30,50,'m'],['Chicken Wrap',550,30,22,55,'m'],['Chips',400,5,18,52,'s'],SD]
+};
+const ALIAS={coffee_shop:'cafe',breakfast:'cafe',brunch:'cafe',tea:'cafe',_cafe:'cafe',american:'burger',noodle:'chinese',noodles:'chinese',dumplings:'chinese',dumpling:'chinese',cantonese:'chinese',sichuan:'chinese',szechuan:'chinese',asian:'chinese',hot_pot:'chinese',dim_sum:'chinese',yum_cha:'chinese',seafood:'fish_and_chips',fish:'fish_and_chips',portuguese:'chicken',peruvian:'chicken',chicken_shop:'chicken',lebanese:'kebab',turkish:'kebab',middle_eastern:'kebab',shawarma:'kebab',falafel:'kebab',pide:'kebab',arab:'kebab',persian:'afghan',iranian:'afghan',pakistani:'indian',sri_lankan:'indian',bangladeshi:'indian',curry:'indian',mediterranean:'greek',tapas:'spanish',ethiopian:'african',moroccan:'african',indonesian:'malaysian',singaporean:'malaysian',vegan:'vegetarian',salad:'vegetarian',healthy:'vegetarian',hawaiian:'poke',gelato:'ice_cream',cake:'dessert',crepe:'dessert',waffle:'dessert',pancake:'dessert',pastry:'bakery',pie:'bakery',steak:'steak_house',grill:'steak_house',barbecue:'bbq',smokehouse:'bbq',smoothie:'juice',smoothies:'juice',kebab_shop:'kebab',sub:'sandwich',deli:'sandwich'};
+function gen(k){k=ALIAS[k]||k;const l=GEN[k];return l?l:null}
+const NAMEGUESS=[['pizza','pizza'],['sushi','sushi'],['ramen','ramen'],['thai','thai'],['kebab','kebab'],['shawarma','kebab'],['pho','vietnamese'],['banh mi','vietnamese'],['burger','burger'],['charcoal','chicken'],['chicken','chicken'],['fish','fish_and_chips'],['seafood','fish_and_chips'],['bakery','bakery'],['bake','bakery'],['pie','bakery'],['coffee','cafe'],['espresso','cafe'],['cafe','cafe'],['café','cafe'],['indian','indian'],['curry','indian'],['tandoor','indian'],['momo','nepalese'],['noodle','chinese'],['dumpling','chinese'],['wok','chinese'],['taco','mexican'],['burrito','mexican'],['mexican','mexican'],['greek','greek'],['souvlaki','greek'],['gyros','greek'],['korean','korean'],['bbq','bbq'],['grill','steak_house'],['steak','steak_house'],['pasta','italian'],['trattoria','italian'],['pizzeria','pizza'],['poke','poke'],['bubble','bubble_tea'],['boba','bubble_tea'],['tea','bubble_tea'],['juice','juice'],['gelato','ice_cream'],['ice cream','ice_cream'],['donut','donut'],['doughnut','donut'],['dessert','dessert'],['waffle','dessert'],['laksa','malaysian'],['afghan','afghan'],['lebanese','kebab'],['turkish','kebab'],['falafel','kebab']];
+
+/* ======================= categories ======================= */
+const CATS=[
+ {k:'all',n:'All',e:'🍽️'},{k:'healthy',n:'Healthy',e:'🥗'},
+ {k:'burger',n:'Burgers',e:'🍔',r:/burger|american|mc ?donald|hungry jack|grill.?d|carl|betty/},
+ {k:'chicken',n:'Chicken',e:'🍗',r:/chicken|kfc|nando|oporto|red rooster|schnitz|portuguese|peruvian|wings/},
+ {k:'pizza',n:'Pizza',e:'🍕',r:/pizza|domino/},
+ {k:'chinese',n:'Chinese',e:'🥡',r:/chinese|cantonese|sichuan|szechuan|dumpling|dim_sum|yum_cha|hot_pot|noodle|wok/},
+ {k:'japanese',n:'Japanese',e:'🍣',r:/japanese|sushi|ramen|teriyaki|izakaya/},
+ {k:'thai',n:'Thai',e:'🍛',r:/thai/},
+ {k:'vietnamese',n:'Vietnamese',e:'🍜',r:/vietnam|pho|banh|roll.?d/},
+ {k:'korean',n:'Korean',e:'🇰🇷',r:/korean/},
+ {k:'indian',n:'Indian',e:'🫓',r:/indian|curry|tandoor|pakistani|sri_lankan|bangladeshi|biryani/},
+ {k:'nepalese',n:'Nepalese',e:'🥟',r:/nepal|momo|tibetan/},
+ {k:'mexican',n:'Mexican',e:'🌯',r:/mexican|guzman|gyg|zambrero|mad mex|taco|burrito/},
+ {k:'kebab',n:'Kebab',e:'🥙',r:/kebab|turkish|shawarma|pide/},
+ {k:'lebanese',n:'Middle East',e:'🧆',r:/lebanese|middle_eastern|arab|falafel|syrian|iraqi|persian|iranian|afghan/},
+ {k:'greek',n:'Greek',e:'🫒',r:/greek|souvlaki|gyros|mediterranean/},
+ {k:'italian',n:'Italian',e:'🍝',r:/italian|pasta|trattoria|osteria/},
+ {k:'seafood',n:'Seafood',e:'🐟',r:/seafood|fish|oyster/},
+ {k:'steak',n:'Steak & Grill',e:'🥩',r:/steak|grill|bbq|barbecue|smokehouse/},
+ {k:'malaysian',n:'Malaysian',e:'🍲',r:/malaysian|indonesian|singapore|laksa/},
+ {k:'filipino',n:'Filipino',e:'🇵🇭',r:/filipino/},
+ {k:'african',n:'African',e:'🌍',r:/african|ethiopian|moroccan|nigerian/},
+ {k:'spanish',n:'Spanish',e:'🥘',r:/spanish|tapas|paella/},
+ {k:'poke',n:'Poke',e:'🐠',r:/poke|hawaiian/},
+ {k:'vegetarian',n:'Vegetarian',e:'🥦',r:/vegetarian|vegan/},
+ {k:'bakery',n:'Bakery',e:'🥐',r:/bakery|pastry|pie|donut king/},
+ {k:'sandwich',n:'Sandwich',e:'🥪',r:/sandwich|subway|deli|banh/},
+ {k:'cafe',n:'Café',e:'☕',r:/cafe|coffee|breakfast|brunch/}
+];
+const DCATS=[{k:'all',n:'All',e:'🥤'},{k:'coffee',n:'Coffee',e:'☕',r:/latte|cappuccino|flat white|long black|espresso|mocha|macchiato|piccolo|coffee/i},{k:'shake',n:'Shakes',e:'🥛',r:/shake|frappe|frappé|thickshake/i},{k:'smoothie',n:'Smoothies & juice',e:'🧃',r:/smoothie|juice|crush|squeeze|boost|mango|berry|banana|protein/i},{k:'tea',n:'Bubble & tea',e:'🧋',r:/tea|matcha|chai|pearl|taro/i},{k:'soft',n:'Soft drinks',e:'🥤',r:/coke|coca|pepsi|sprite|fanta|solo|7up|mountain dew|sunkist|soda|freeze|frozen|red bull|v green|powerade|gatorade|lemonade|bitters/i},{k:'zero',n:'Zero cal',e:'💧',z:1}];
+const XCATS=[{k:'all',n:'All',e:'🍩'},{k:'ice',n:'Ice cream',e:'🍦',r:/sundae|mcflurry|storm|cone|gelato|ice.?cream|mixer|soft serve|froyo|mcpops|drumstick/i},{k:'donut',n:'Donuts',e:'🍩',r:/donut|ball|cronut|éclair|scroll/i},{k:'baked',n:'Baked',e:'🧁',r:/cookie|muffin|bread|brownie|cake|slice|pie|tart|croissant|churro|nata|lamington|pancake/i},{k:'choc',n:'Chocolate',e:'🍫',r:/choc|nutella|mousse|fudge|lava|tim tam|oreo|m&m|twix|malteser/i},{k:'light',n:'Under 200',e:'🪶',lt:200}];
+const GRAD=['#FFE3D3,#FFC6A8','#E3F7C9,#C6F432','#E5DEFF,#C3B2FF','#D7F0FF,#A9DCFF','#FFE0EC,#FFB8D2','#FFF3C4,#FFE07A','#DDF6EE,#A8E8D2'];
+
+/* ======================= helpers ======================= */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const R=Math.round;
+function hav(a,b){const r=6371,t=x=>x*Math.PI/180,dLa=t(b.lat-a.lat),dLo=t(b.lon-a.lon);const h=Math.sin(dLa/2)**2+Math.cos(t(a.lat))*Math.cos(t(b.lat))*Math.sin(dLo/2)**2;return 2*r*Math.asin(Math.sqrt(h))}
+const fmtD=km=>km<1?R(km*100)*10+' m':km.toFixed(1)+' km';
+const mins=km=>Math.max(3,R(km*1.35/38*60+2));
+function hay(p){return (p.brand+' '+p.name+' '+p.cuisine.join(' ')+' '+p.type).toLowerCase().replace(/[’']/g,'')}
+function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),1800)}
+function chainOf(p){if(p._ch!==undefined)return p._ch;const h=(p.brand+' '+p.name).toLowerCase().replace(/[’']/g,'');for(const k in CH)if(CH[k].re.test(h))return p._ch=k;return p._ch=null}
+function catOf(p){const h=hay(p);const c=CATS.find(c=>c.r&&c.r.test(h));return c||{e:p.type==='cafe'?'☕':p.type==='fast_food'?'🥡':'🍽️'}}
+const toIt=a=>({n:a[0],k:a[1],p:a[2],f:a[3],c:a[4],t:a[5]});
+
+/* ======================= menus ======================= */
+function menuFor(p){
+  if(p._m)return p._m;
+  if(aiMenus[p.id])return p._m={src:'ai',items:aiMenus[p.id]};
+  const ck=chainOf(p);if(ck)return p._m={src:'pub',chain:CH[ck].l,items:CH[ck].items};
+  let items=[],seen=new Set();
+  const add=l=>{for(const a of l){if(!seen.has(a[0])){seen.add(a[0]);items.push(toIt(a))}}};
+  for(const c of p.cuisine){const l=gen(c);if(l)add(l)}
+  if(!items.length){const n=p.name.toLowerCase();const g=NAMEGUESS.find(g=>n.includes(g[0]));if(g)add(gen(g[1]))}
+  if(!items.length)add(gen('_'+p.type)||GEN._restaurant);
+  if(p.type==='cafe'&&!items.some(i=>i.t==='d'))add(GEN.cafe.filter(a=>a[5]==='d'));
+  return p._m={src:'est',items};
+}
+
+/* ======================= satiety ======================= */
+const ING=[['🥔',/potato|\bchips\b|fries|mash|hash ?brown|rosti|wedge|scallop|gnocchi|patatas/i,1.5],
+ ['🍞',/bread|\bbun|burger|roll\b|rolls|\bsub\b|6"|footlong|toast|wrap|pita|naan|banh mi|sandwich|slider|muffin|bagel|tortilla|burrito|quesadilla|taco|rappa|pocket|tower|croissant|\bpie\b|pastie|roti|bolani|injera|pide|whopper|big mac|big jack|mcchicken|mccrispy|mcspicy|filet-o|twister|hot dog|pizza|slices?\b|crêpe|crepe/i,1],
+ ['🍚',/rice|bowl|paella|biryani|pulao|\boat|quinoa|noodle|pho\b|ramen|pasta|spaghetti|lasagne|couscous|pad thai|pad see|chow mein|laksa|vermicelli|\bdon\b|pancit|bibimbap|kway teow|mee |dal bhat|gyudon/i,1],
+ ['🫘',/bean|\bdal\b|lentil|hummus|falafel|chickpea|chana|edamame|\bpeas\b/i,1.5],
+ ['🥚',/egg|brekkie|breakfast|benedict|omelet|mcmuffin/i,1],
+ ['🥗',/salad|veg|slaw|corn|broccoli|garden|greens|bok choy|tabouli|kimchi|apple|fruit|lettuce|avo/i,1]];
+function sat(it){
+  if(it._s)return it._s;
+  const tags=[];let ing=0;
+  for(const [e,r,w] of ING)if(r.test(it.n)){tags.push(e);ing+=w}
+  const pf=it.k>0?it.p*4/it.k:0,ff=it.k>0?it.f*9/it.k:0;
+  let s=2+Math.min(4.5,pf*12)+Math.min(3,ing);
+  if(pf>=0.25)tags.unshift('🍗');
+  if(ff>0.6)s-=1;
+  if(it.t==='d')s-=(pf>0.25?1:3);
+  if(it.t==='x')s-=2;
+  if(it.t==='e')s-=1;
+  if(it.k<150)s-=1;
+  return it._s={s:Math.max(0,Math.min(10,R(s))),tags};
+}
+function totals(list){ // list of {it,q}
+  let k=0,p=0,f=0,c=0,sw=0;const tags=new Set();
+  for(const {it,q} of list){k+=it.k*q;p+=it.p*q;f+=it.f*q;c+=it.c*q;const s=sat(it);sw+=s.s*it.k*q;s.tags.forEach(t=>tags.add(t))}
+  return {k,p,f,c,sat:k?R(sw/k):0,tags:[...tags]};
+}
+function satHTML(s,tags){return `<div class="satbar">Fullness <span class="bar"><i style="width:${s*10}%"></i></span><b>${s}/10</b> <span class="ing">${tags.join('')}</span></div>`}
+
+/* ======================= location & data ======================= */
+function setLocLbl(){const l=S.loc||DEFAULT_LOC;$('locLbl').textContent=l.label;$('locPre').textContent=S.mode==='delivery'?'Delivering to':'Pickup near'}
+async function reverse(lat,lon){try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&zoom=14&lat=${lat}&lon=${lon}`);const j=await r.json();const a=j.address||{};return [a.suburb||a.town||a.city_district||a.village||a.city,a.state&&a.state.replace('New South Wales','NSW').replace('Victoria','VIC').replace('Queensland','QLD'),a.postcode].filter(Boolean).join(' ')||'Current location'}catch(e){return 'Current location'}}
+function gps(force){
+  return new Promise(res=>{
+    if(!navigator.geolocation){res(false);return}
+    navigator.geolocation.getCurrentPosition(async pos=>{
+      const lat=pos.coords.latitude,lon=pos.coords.longitude;
+      const prev=S.loc;const same=prev&&prev.gps&&hav(prev,{lat,lon})<0.3;
+      S.loc={lat,lon,label:same?prev.label:'Current location',gps:true};store.set('loc',S.loc);setLocLbl();
+      if(!same)reverse(lat,lon).then(l=>{S.loc.label=l;store.set('loc',S.loc);setLocLbl()});
+      res(true)},()=>res(false),{enableHighAccuracy:true,timeout:12000,maximumAge:120000});
+  });
+}
+async function geocode(q){
+  const r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=au&addressdetails=1&q='+encodeURIComponent(q));
+  const j=await r.json();if(!j.length)throw new Error('Couldn’t find that place');
+  const a=j[0].address||{};
+  return {lat:+j[0].lat,lon:+j[0].lon,label:[a.suburb||a.town||a.city||j[0].display_name.split(',')[0],a.postcode].filter(Boolean).join(' '),gps:false};
+}
+const OVERPASS=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter','https://maps.mail.ru/osm/tools/overpass/api/interpreter'];
+async function load(force){
+  const L=S.loc||DEFAULT_LOC;
+  const ck='c4_'+L.lat.toFixed(3)+'_'+L.lon.toFixed(3)+'_'+S.rad,c=store.get(ck,null);
+  if(!force&&c&&Date.now()-c.t<43200000){places=c.p;afterLoad();return}
+  $('list').innerHTML='<div class="skel"></div><div class="skel"></div><div class="skel"></div>';
+  status('<span class="spin"></span> Finding food near '+esc(L.label)+'…');
+  const r=R(S.rad*1000);
+  const q=`[out:json][timeout:25];(nwr["amenity"~"^(restaurant|fast_food|cafe|food_court|ice_cream|pub)$"]["name"](around:${r},${L.lat},${L.lon});nwr["shop"~"^(bakery|pastry|confectionery|deli)$"]["name"](around:${r},${L.lat},${L.lon}););out center tags 600;`;
+  let data=null,err;
+  for(const u of OVERPASS){try{const res=await fetch(u,{method:'POST',body:'data='+encodeURIComponent(q),headers:{'Content-Type':'application/x-www-form-urlencoded'}});if(!res.ok)throw new Error('HTTP '+res.status);data=await res.json();break}catch(e){err=e}}
+  if(!data){if(c){places=c.p;afterLoad();status('Offline — showing saved stores.');return}$('list').innerHTML='';status('Couldn’t load stores ('+esc(err&&err.message)+'). Try Refresh in ⚙️.');return}
+  places=data.elements.map(e=>{const t=e.tags||{},lat=e.lat??e.center?.lat,lon=e.lon??e.center?.lon;
+    let type=t.amenity||'';if(type==='food_court'||type==='pub')type='restaurant';if(type==='ice_cream')type='cafe';if(t.shop)type='cafe';
+    const cu=(t.cuisine||'').toLowerCase().split(/[;,]/).map(s=>s.trim()).filter(Boolean);if(t.shop==='bakery'||t.shop==='pastry')cu.push('bakery');if(t.amenity==='ice_cream')cu.push('ice_cream');
+    return{id:e.type[0]+e.id,name:t.name,brand:t.brand||'',type,cuisine:cu,lat,lon,web:t.website||t['contact:website']||'',menuUrl:t['website:menu']||'',hours:t.opening_hours||'',
+      addr:[t['addr:housenumber'],t['addr:street'],t['addr:suburb']||t['addr:city']].filter(Boolean).join(' ')}}).filter(p=>p.lat&&p.name);
+  store.set(ck,{t:Date.now(),p:places});afterLoad();
+}
+function afterLoad(){
+  const L=S.loc||DEFAULT_LOC;
+  places.forEach(p=>{p.d=hav(L,p);delete p._m;delete p._ch});
+  places.sort((a,b)=>a.d-b.d);
+  // one store per chain (nearest) and per repeated name
+  const seen=new Set();places=places.filter(p=>{const k=chainOf(p)||p.name.toLowerCase().replace(/[^a-z0-9]/g,'');if(seen.has(k))return false;seen.add(k);return true});
+  status('');renderAll();
+}
+function status(h){$('status').innerHTML=h;$('mfStatus').innerHTML=h}
+
+/* ======================= browse (food / drinks / desserts) ======================= */
+const TYPES={food:['m','s'],drinks:['d'],desserts:['x']};
+function capKey(){return S.tab==='drinks'?'dk':S.tab==='desserts'?'xk':'kcal'}
+function cats(){return S.tab==='drinks'?DCATS:S.tab==='desserts'?XCATS:CATS}
+function sortItems(a){const s=S.sort;return a.slice().sort((x,y)=>s==='kcal'?x.k-y.k:s==='ratio'?(y.p/Math.max(y.k,1))-(x.p/Math.max(x.k,1)):s==='sat'?sat(y).s-sat(x).s||x.k-y.k:y.p-x.p)}
+function navUrl(p){if(S.nav==='apple')return`https://maps.apple.com/?daddr=${p.lat},${p.lon}&q=${encodeURIComponent(p.name)}`;if(S.nav==='google')return`https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}`;return`https://waze.com/ul?ll=${p.lat},${p.lon}&navigate=yes`}
+const ueUrl=p=>`https://www.ubereats.com/au/search?q=${encodeURIComponent(p.name)}`;
+const srcTag=s=>s==='pub'?'<span class="src s-pub">CHAIN</span>':s==='ai'?'<span class="src s-ai">AI</span>':'<span class="src s-est">EST</span>';
+function itemRow(p,i,showT){
+  const s=sat(i);
+  return `<div class="it"><div><div class="in">${esc(i.n)}${i.e||i.pub===false?'<span class="src s-est">EST</span>':i.pub===true?'<span class="src s-pub">MENU</span>':''}${showT&&i.t==='s'?'<span class="src" style="background:#eef">SIDE</span>':''}</div>
+   <div class="im"><span class="P">P ${R(i.p)}g</span><span class="F">F ${R(i.f)}g</span><span class="C">C ${R(i.c)}g</span>${S.tab==='food'?`<span>· ${s.s}/10 ${s.tags.slice(0,3).join('')}</span>`:''}</div></div>
+   <div class="ir"><div class="ik">${R(i.k)}<small>kcal</small></div><button class="add" data-add="${esc(p.id)}" data-n="${esc(i.n)}">+</button></div></div>`;
+}
+function visible(){
+  const q=S.q.toLowerCase(),types=TYPES[S.tab],cap=S[capKey()],C=cats(),cat=C.find(c=>c.k===S.cat)||C[0];const out=[];
+  for(const p of places){
+    const m=menuFor(p);
+    if(S.type==='chains'){if(m.src==='est')continue}else if(S.type&&p.type!==S.type)continue;
+    let fit=m.items.filter(i=>types.includes(i.t)&&i.k<=cap);
+    if(!fit.length)continue;
+    if(q){const nh=p.name.toLowerCase().includes(q);if(!nh)fit=fit.filter(i=>i.n.toLowerCase().includes(q));if(!fit.length)continue}
+    if(S.tab==='food'){
+      if(cat.k==='healthy')fit=fit.filter(i=>i.p/Math.max(i.k,1)>=0.08||sat(i).s>=7);
+      else if(cat.r&&!cat.r.test(hay(p)))continue;
+    }else if(cat.k!=='all'){
+      fit=fit.filter(i=>cat.z?i.k<=5:cat.lt?i.k<cat.lt:cat.r.test(i.n));
+    }
+    if(!fit.length)continue;
+    out.push({p,m,fit:sortItems(fit)});
+  }
+  return out;
+}
+function renderCats(){const C=cats();if(!C.find(c=>c.k===S.cat))S.cat='all';$('cats').innerHTML=C.map(c=>`<button class="cat${c.k===S.cat?' on':''}" data-c="${c.k}"><span class="e">${c.e}</span>${c.n}</button>`).join('')}
+function renderCap(){
+  const k=capKey(),v=S[k],max=k==='kcal'?1500:1000;const kc=$('kcal');kc.max=max;kc.value=v;
+  $('capLbl').textContent=S.tab==='drinks'?'Calorie cap per drink':S.tab==='desserts'?'Calorie cap per dessert':'Calorie cap per item';
+  $('kcalVal').textContent=v>=max?'No limit':v;
+  const qs=k==='kcal'?[400,600,800,1000,1500]:k==='dk'?[0,100,200,300,1000]:[150,250,400,600,1000];
+  $('quick').innerHTML=qs.map(x=>`<button data-k="${x}" class="${x===v?'on':''}">${x>=max?'No limit':x===0?'Zero':x}</button>`).join('');
+}
+function renderFilters(){
+  const f=[['r',2,'2 km'],['r',5,'5 km'],['r',10,'10 km'],['s','protein','💪 Protein'],['s','ratio','⚡ Protein/kcal'],['s','kcal','🪶 Lightest']];
+  if(S.tab==='food')f.push(['s','sat','😌 Most filling'],['t','fast_food','Takeaway'],['t','restaurant','Restaurants']);
+  f.push(['t','cafe','Cafés'],['t','chains','Verified nutrition']);
+  $('filters').innerHTML=f.map(([a,v,l])=>`<button class="pill${(a==='r'&&S.rad===v)||(a==='s'&&S.sort===v)||(a==='t'&&S.type===v)?' on':''}" data-${a}="${v}">${l}</button>`).join('');
+}
+function renderBrowse(){
+  renderCats();renderCap();renderFilters();
+  if(!places.length)return;
+  const v=visible();
+  $('count').textContent=v.length+' stores';
+  $('listTitle').textContent=S.tab==='drinks'?'Drinks nearby':S.tab==='desserts'?'Desserts nearby':'Nearest first';
+  const all=[];v.forEach(({p,m,fit})=>fit.forEach(i=>{if(S.tab!=='food'||i.t==='m')all.push({p,m,i})}));
+  all.sort((a,b)=>{const x=a.i,y=b.i;return S.sort==='kcal'?x.k-y.k:S.sort==='ratio'?(y.p/Math.max(y.k,1))-(x.p/Math.max(x.k,1)):S.sort==='sat'?sat(y).s-sat(x).s:y.p-x.p});
+  const seen=new Set(),picks=[];for(const x of all){if(seen.has(x.p.id))continue;seen.add(x.p.id);picks.push(x);if(picks.length>=10)break}
+  $('picksTitle').textContent={kcal:'Lightest picks',ratio:'Best protein per calorie',sat:'Most filling picks',protein:'Top protein picks'}[S.sort];
+  $('picksWrap').style.display=picks.length?'':'none';
+  $('picks').innerHTML=picks.map(({p,i})=>`<div class="pick"><div class="pn">${esc(i.n)}</div><div class="ps">${catOf(p).e} ${esc(p.name)} · ${fmtD(p.d)}</div>
+    <div class="pk"><div class="kc">${R(i.k)} <small>kcal</small></div>${S.tab==='food'||i.p>=10?`<div class="prot">${R(i.p)}g protein</div>`:''}<button class="add" data-add="${esc(p.id)}" data-n="${esc(i.n)}">+</button></div></div>`).join('');
+  $('list').innerHTML=v.length?v.map(({p,m,fit},idx)=>{
+    const c=catOf(p),g=GRAD[(p.name.length+p.name.charCodeAt(0))%GRAD.length].split(',');
+    const lim=expanded.has(p.id)?fit.length:4;
+    const meta=[m.chain||(p.cuisine[0]||'').replace(/_/g,' ')||(p.type==='fast_food'?'Takeaway':p.type==='cafe'?'Café':'Restaurant'),fmtD(p.d),'~'+mins(p.d)+' min'].filter(Boolean).join(' · ');
+    const tag=m.src==='pub'?'✅ Official nutrition':m.src==='ai'?'✨ Menu scanned':'≈ Estimated';
+    const cta=S.mode==='delivery'?`<a class="cta" href="${ueUrl(p)}">Order</a>`:`<a class="cta" href="${navUrl(p)}">Go · ${mins(p.d)}m</a>`;
+    return `<div class="store">
+      <div class="banner" style="background:linear-gradient(135deg,${g[0]},${g[1]})"><span class="tag">${tag}</span>${idx===0&&!S.q?'<span class="near">Closest</span>':''}${c.e}<span class="dist">${fmtD(p.d)}</span></div>
+      <div class="sh"><div><div class="sn">${esc(p.name)}</div><div class="sm">${esc(meta)}</div></div>${cta}</div>
+      <div class="menu">${fit.slice(0,lim).map(i=>itemRow(p,i,S.tab==='food')).join('')}
+      ${fit.length>4?`<button class="more" data-x="${esc(p.id)}">${expanded.has(p.id)?'Show less':'See all '+fit.length+' options'}</button>`:''}</div>
+      <div class="acts">${srcTag(m.src)}${S.tab==='food'?`<button class="ab pri" data-build="${esc(p.id)}">🍱 Build a meal</button>`:''}<button class="ab" data-scan="${esc(p.id)}">📷 ${m.src==='ai'?'Rescan':'Scan menu'}</button>
+        ${S.mode==='delivery'?`<a class="ab" href="${navUrl(p)}">🧭 Pickup</a>`:`<a class="ab" href="${ueUrl(p)}">🛵 Uber Eats</a>`}
+        <a class="ab" href="${esc(p.menuUrl||p.web)||'https://www.google.com/search?q='+encodeURIComponent(p.name+' '+(p.addr||'')+' menu')}">🌐 Menu</a></div></div>`}).join('')
+    :`<div class="empty">Nothing matches. Try a higher cap, a wider radius or another category.</div>`;
+}
+
+/* ======================= meal finder ======================= */
+const COMBO=/combo|\bbox\b|\bpack\b|meal\b|feast/i;
+function mealsFor(p){
+  const m=menuFor(p),L=S.mealCap;
+  const mains=m.items.filter(i=>i.t==='m'&&i.k>=150&&i.k<=L);
+  const sides=m.items.filter(i=>i.t==='s'&&i.k>=30);
+  const out=[];
+  for(const a of mains){
+    const isC=COMBO.test(a.n);if(isC&&!S.combos)continue;
+    const cands=isC?[[a]]:sides.filter(b=>a.k+b.k<=L).map(b=>[a,b]);
+    for(const c of cands){
+      const t=totals(c.map(it=>({it,q:1})));if(t.sat<S.sat)continue;
+      t.score=t.sat*1.2+(t.p*4/t.k)*12+(t.k/L)*3;out.push({items:c,...t});
+    }
+  }
+  out.sort((x,y)=>S.ms==='protein'?y.p-x.p:y.score-x.score);
+  const seen=new Set(),res=[];for(const o of out){if(seen.has(o.items[0].n))continue;seen.add(o.items[0].n);res.push(o);if(res.length>=3)break}
+  return res;
+}
+function renderMeal(){
+  $('mealCap').value=S.mealCap;$('mealVal').textContent=S.mealCap;$('sat').value=S.sat;$('satVal').textContent=S.sat?S.sat+'+ / 10':'Any';
+  $('satHint').textContent=S.sat>=7?'Very filling: protein plus potato, bread, rice, beans or veg':S.sat>=4?'Filling: decent protein or starchy/fibre ingredients':'Anything goes';
+  document.querySelectorAll('#mfFilters .pill').forEach(b=>b.classList.toggle('on',b.dataset.ms?b.dataset.ms===S.ms:S.combos));
+  if(!places.length)return;
+  let rows=places.map(p=>({p,meals:mealsFor(p)})).filter(r=>r.meals.length);
+  if(S.ms==='best')rows.sort((a,b)=>b.meals[0].score-a.meals[0].score);
+  if(S.ms==='protein')rows.sort((a,b)=>b.meals[0].p-a.meals[0].p);
+  $('mfCount').textContent=rows.length+' stores';
+  $('mfList').innerHTML=rows.length?rows.slice(0,60).map(({p,meals})=>{
+    const m=menuFor(p);
+    return `<div class="store"><div class="sh"><div><div class="sn">${catOf(p).e} ${esc(p.name)}</div><div class="sm">${esc(m.chain||'')}${m.chain?' · ':''}${fmtD(p.d)} · ~${mins(p.d)} min</div></div>${srcTag(m.src)}</div>
+    ${meals.map((ml,ix)=>`<div class="meal"><div class="mh"><div class="mi">${esc(ml.items[0].n)}${ml.items[1]?`<span>+ ${esc(ml.items[1].n)}</span>`:'<span>Combo / box</span>'}</div><div class="ik">${R(ml.k)}<small>kcal</small></div></div>
+      <div class="im"><span class="P">P ${R(ml.p)}g</span><span class="F">F ${R(ml.f)}g</span><span class="C">C ${R(ml.c)}g</span></div>
+      ${satHTML(ml.sat,ml.tags)}
+      <div class="mb"><button class="ab pri" data-pick="${esc(p.id)}" data-ix="${ix}">Customise & add extras</button><button class="ab" data-quick="${esc(p.id)}" data-ix="${ix}">+ Cart</button></div></div>`).join('')}</div>`}).join('')
+    :`<div class="empty">No main + side combos fit ${S.mealCap} kcal with fullness ${S.sat}+. Try raising the limit or lowering fullness.</div>`;
+}
+
+/* ======================= meal builder ======================= */
+let B=null,bTab='m';
+function openBuilder(p,items){B={p,list:items.map(it=>({it,q:1}))};bTab='m';$('bQ').value='';$('bTitle').textContent=p.name;renderB();$('bModal').classList.add('show')}
+function renderB(){
+  const t=totals(B.list),L=S.mealCap,over=t.k>L;
+  $('bK').textContent=R(t.k);$('bL').textContent=L;
+  $('bLeft').innerHTML=over?`<span class="over">${R(t.k-L)} over</span>`:`${R(L-t.k)} left`;
+  const pr=$('bProg');pr.style.width=Math.min(100,t.k/L*100)+'%';pr.className=over?'over':'';
+  $('bMac').innerHTML=`<span class="P">P ${R(t.p)}g</span><span class="F">F ${R(t.f)}g</span><span class="C">C ${R(t.c)}g</span>`;
+  $('bSat').outerHTML=`<div id="bSat">${satHTML(t.sat,t.tags)}</div>`;
+  $('bItems').innerHTML=B.list.length?B.list.map((x,i)=>`<div class="ci"><div class="cn"><b>${esc(x.it.n)}</b><small>${R(x.it.k)} kcal · P ${R(x.it.p)}g</small></div><div class="qty"><button data-bq="${i}" data-d="-1">−</button><b>${x.q}</b><button data-bq="${i}" data-d="1">+</button></div></div>`).join(''):'<div class="empty">Add something below.</div>';
+  const m=menuFor(B.p),TL=[['m','Mains'],['s','Sides'],['d','Drinks'],['x','Desserts'],['e','Extras & sauces']].filter(([k])=>m.items.some(i=>i.t===k));
+  if(!TL.find(x=>x[0]===bTab))bTab=TL[0][0];
+  $('bTabs').innerHTML=TL.map(([k,l])=>`<button class="pill${k===bTab?' on':''}" data-bt="${k}">${l}</button>`).join('');
+  const q=$('bQ').value.trim().toLowerCase(),left=L-t.k;
+  const items=m.items.filter(i=>(q?i.n.toLowerCase().includes(q):i.t===bTab)).sort((a,b)=>a.k-b.k);
+  $('bMenu').innerHTML=`<div class="menu">${items.map(i=>`<div class="it"><div><div class="in">${esc(i.n)}</div><div class="im"><span class="P">P ${R(i.p)}g</span><span class="F">F ${R(i.f)}g</span><span class="C">C ${R(i.c)}g</span>${i.k>left?'<span style="color:var(--bad)">over limit</span>':''}</div></div><div class="ir"><div class="ik">${R(i.k)}<small>kcal</small></div><button class="add" data-bn="${esc(i.n)}">+</button></div></div>`).join('')||'<div class="it"><div class="im">Nothing here.</div></div>'}</div>`;
+  $('bAdd').textContent=`Add to cart · ${R(t.k)} kcal`;
+}
+
+/* ======================= cart & wallet ======================= */
+const today=()=>new Date().toLocaleDateString('en-CA');
+function saveCart(){store.set('cart',cart);badge()}
+function badge(){const n=cart.reduce((a,x)=>a+x.q,0);for(const id of ['cartBd','navBd']){const b=$(id);b.style.display=n?'':'none';b.textContent=n}}
+function addToCart(p,it,q=1){
+  const ex=cart.find(x=>x.pid===p.id&&x.n===it.n);
+  if(ex)ex.q+=q;else cart.push({pid:p.id,store:p.name,lat:p.lat,lon:p.lon,n:it.n,k:it.k,p:it.p,f:it.f,c:it.c,q});
+  saveCart();toast(`Added ${it.n} · ${R(it.k*q)} kcal`);if(S.tab==='cart')renderCart();
+}
+function spentToday(){return (ledger[today()]||[]).reduce((a,o)=>a+o.k,0)}
+function renderCart(){
+  const spent=spentToday(),rem=S.budget-spent;
+  $('wRem').textContent=R(rem);$('wBud').textContent=S.budget;$('wBar').style.width=Math.min(100,spent/S.budget*100)+'%';
+  const tk=cart.reduce((a,x)=>a+x.k*x.q,0),tp=cart.reduce((a,x)=>a+x.p*x.q,0),tf=cart.reduce((a,x)=>a+x.f*x.q,0),tc=cart.reduce((a,x)=>a+x.c*x.q,0);
+  const by={};cart.forEach((x,i)=>{(by[x.store]=by[x.store]||[]).push([x,i])});
+  $('cartList').innerHTML=cart.length?Object.entries(by).map(([s,rows])=>`<div class="sec" style="padding:12px 0 2px"><h2 style="font-size:16px">${esc(s)}</h2></div>${rows.map(([x,i])=>`<div class="ci"><div class="cn"><b>${esc(x.n)}</b><small>${R(x.k)} kcal · P ${R(x.p)}g F ${R(x.f)}g C ${R(x.c)}g</small></div><div class="qty"><button data-cq="${i}" data-d="-1">−</button><b>${x.q}</b><button data-cq="${i}" data-d="1">+</button></div></div>`).join('')}`).join('')+
+    `<div class="tot"><span>Total</span><span>${R(tk)} kcal</span></div><div class="im"><span class="P">P ${R(tp)}g</span><span class="F">F ${R(tf)}g</span><span class="C">C ${R(tc)}g</span></div>
+     ${tk>rem?`<div class="note">This order is ${R(tk-rem)} kcal over today's wallet.</div>`:''}
+     <button class="paybtn" id="payBtn">Checkout · Pay ${R(tk)} kcal<small>Logs to today and exports to MyFitnessPal</small></button>`
+    :`<div class="empty">Your cart is empty.<br>Tap <b>+</b> on any item, or build a meal in <b>Meal Finder</b>.</div>`;
+  const log=ledger[today()]||[];
+  $('logTot').textContent=log.length?R(spent)+' kcal':'';
+  $('logList').innerHTML=log.length?log.map((o,i)=>`<div class="log"><span>${esc(o.time)} · ${esc(o.stores.join(', '))}<br><small style="color:var(--mute)">${esc(o.items.map(x=>(x.q>1?x.q+'× ':'')+x.n).join(', '))}</small></span><span style="text-align:right;white-space:nowrap"><b>${R(o.k)}</b> kcal<br><button class="more" data-mfp="${i}" style="padding:2px 0">MFP ›</button></span></div>`).join(''):'<div class="empty" style="padding:14px">Nothing logged today.</div>';
+}
+function checkout(){
+  if(!cart.length)return;
+  const k=cart.reduce((a,x)=>a+x.k*x.q,0);
+  const o={time:new Date().toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'}),k,stores:[...new Set(cart.map(x=>x.store))],items:cart.map(x=>({...x}))};
+  const d=today();(ledger[d]=ledger[d]||[]).push(o);
+  // keep 30 days
+  const keys=Object.keys(ledger).sort();while(keys.length>30)delete ledger[keys.shift()];
+  store.set('ledger',ledger);cart=[];saveCart();renderCart();showReceipt(o);
+}
+const mfpLine=x=>`${x.store} – ${x.n}${x.q>1?' ×'+x.q:''}: ${R(x.k*x.q)} kcal, protein ${R(x.p*x.q)}g, fat ${R(x.f*x.q)}g, carbs ${R(x.c*x.q)}g`;
+function showReceipt(o){
+  const rem=S.budget-spentToday();
+  $('rK').textContent=R(o.k);$('rRem').textContent=`${R(rem)} kcal left in today's wallet.`;
+  $('rItems').innerHTML=o.items.map((x,i)=>`<div class="mfp"><div class="mt">${esc(x.n)}${x.q>1?' ×'+x.q:''}</div><div class="mm">${esc(x.store)} · ${R(x.k*x.q)} kcal · P ${R(x.p*x.q)}g · F ${R(x.f*x.q)}g · C ${R(x.c*x.q)}g</div>
+    <div class="acts"><a class="ab pri" href="https://www.myfitnesspal.com/food/search?search=${encodeURIComponent((x.store+' '+x.n).replace(/\(.*?\)/g,''))}">🔎 Find in MFP</a><button class="ab" data-copy="${i}">📋 Copy for Quick Add</button></div></div>`).join('')+
+    o.stores.map(s=>{const p=places.find(pp=>pp.name===s);return p?`<div class="acts" style="margin-top:10px"><a class="ab" href="${ueUrl(p)}">🛵 Order ${esc(s)} on Uber Eats</a><a class="ab" href="${navUrl(p)}">🧭 Go</a></div>`:''}).join('');
+  $('rModal').dataset.o=JSON.stringify(o);$('rModal').classList.add('show');
+}
+async function copy(t){try{await navigator.clipboard.writeText(t);toast('Copied')}catch(e){toast('Copy failed – long-press to select')}}
+
+/* ======================= AI menu reader ======================= */
+let scanId=null;
+function openScan(id){scanId=id;const p=places.find(x=>x.id===id);$('mTitle').textContent='Scan menu — '+p.name;$('mErr').textContent='';$('mText').value='';$('mFile').value='';$('menuModal').classList.add('show')}
+async function fileToB64(file){
+  const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=URL.createObjectURL(file)});
+  const sc=Math.min(1,1600/Math.max(img.width,img.height)),cv=document.createElement('canvas');
+  cv.width=R(img.width*sc);cv.height=R(img.height*sc);cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+  return cv.toDataURL('image/jpeg',0.85).split(',')[1];
+}
+async function runScan(){
+  const err=$('mErr');err.textContent='';
+  if(!S.key){err.textContent='Add your Anthropic API key in ⚙️ first.';return}
+  const files=[...$('mFile').files].slice(0,8),txt=$('mText').value.trim();
+  if(!files.length&&!txt){err.textContent='Add a screenshot or paste some menu text.';return}
+  const p=places.find(x=>x.id===scanId),content=[];
+  for(const f of files)content.push({type:'image',source:{type:'base64',media_type:'image/jpeg',data:await fileToB64(f)}});
+  content.push({type:'text',text:`This is the menu for "${p.name}" (${p.type}${p.cuisine.length?', '+p.cuisine.join(', '):''}) in Australia. The images may be Uber Eats screenshots; ignore prices, promos and duplicates across overlapping screenshots.${txt?'\n\nMenu text:\n'+txt:''}
+
+List EVERY food and drink item. For each: if calories or kilojoules are printed (Uber Eats shows e.g. "2180 kJ"), use them (kJ ÷ 4.184 = kcal) and set "published": true; otherwise estimate a realistic portion and set "published": false. Always estimate protein, fat and carbs in grams consistent with the calories. Set "type" to one of: main, side, drink, dessert, extra (sauces/add-ons). Combos/boxes are "main".
+Reply with ONLY a JSON array: [{"name":"...","type":"main","kcal":0,"protein":0,"fat":0,"carbs":0,"published":false}]`});
+  const btn=$('mGo');btn.disabled=true;btn.innerHTML='<span class="spin" style="border-color:#fff;border-top-color:transparent"></span> Scanning…';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':S.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:S.model,max_tokens:12000,messages:[{role:'user',content}]})});
+    const j=await r.json();if(!r.ok)throw new Error(j.error?.message||('HTTP '+r.status));
+    const out=j.content.filter(c=>c.type==='text').map(c=>c.text).join('');
+    const arr=JSON.parse(out.slice(out.indexOf('['),out.lastIndexOf(']')+1));
+    const TM={main:'m',side:'s',drink:'d',dessert:'x',extra:'e'};
+    const items=arr.filter(i=>i&&i.name&&+i.kcal>=0).map(i=>({n:i.name,k:+i.kcal,p:+i.protein||0,f:+i.fat||0,c:+i.carbs||0,t:TM[i.type]||'m',pub:!!i.published}));
+    if(!items.length)throw new Error('No menu items found.');
+    aiMenus[scanId]=items;store.set('aiMenus',aiMenus);delete p._m;$('menuModal').classList.remove('show');renderAll();toast(items.length+' items scanned');
+  }catch(e){err.textContent='Couldn’t read the menu: '+e.message}
+  finally{btn.disabled=false;btn.textContent='Scan menu'}
+}
+
+/* ======================= tabs & wiring ======================= */
+function renderAll(){if(S.tab==='meal')renderMeal();else if(S.tab==='cart')renderCart();else renderBrowse()}
+function setTab(t){
+  S.tab=t;S.cat='all';expanded.clear();
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  $('v-browse').classList.toggle('on',['food','drinks','desserts'].includes(t));$('v-meal').classList.toggle('on',t==='meal');$('v-cart').classList.toggle('on',t==='cart');
+  $('searchWrap').style.display=['food','drinks','desserts'].includes(t)?'':'none';
+  $('q').placeholder=t==='drinks'?'Search drinks':t==='desserts'?'Search desserts':'Search stores or dishes';
+  renderAll();window.scrollTo(0,0);
+}
+$('nav').onclick=e=>{const b=e.target.closest('[data-tab]');if(b)setTab(b.dataset.tab)};
+$('cartIcon').onclick=()=>setTab('cart');
+$('cats').onclick=e=>{const b=e.target.closest('[data-c]');if(!b)return;S.cat=b.dataset.c;renderBrowse()};
+$('kcal').oninput=e=>{S[capKey()]=+e.target.value;renderBrowse()};$('kcal').onchange=()=>store.set(capKey(),S[capKey()]);
+$('quick').onclick=e=>{const b=e.target.closest('[data-k]');if(!b)return;S[capKey()]=+b.dataset.k;store.set(capKey(),S[capKey()]);renderBrowse()};
+$('filters').onclick=e=>{const b=e.target.closest('.pill');if(!b)return;
+  if(b.dataset.r){S.rad=+b.dataset.r;store.set('rad3',S.rad);load()}else if(b.dataset.s){S.sort=b.dataset.s;store.set('sort',S.sort);renderBrowse()}else{S.type=S.type===b.dataset.t?'':b.dataset.t;renderBrowse()}};
+let qt;$('q').oninput=e=>{clearTimeout(qt);qt=setTimeout(()=>{S.q=e.target.value.trim();renderBrowse()},150)};
+$('mode').onclick=e=>{const b=e.target.closest('[data-m]');if(!b)return;S.mode=b.dataset.m;store.set('mode',S.mode);document.querySelectorAll('#mode button').forEach(x=>x.classList.toggle('on',x===b));setLocLbl();renderAll()};
+document.querySelectorAll('#mode button').forEach(x=>x.classList.toggle('on',x.dataset.m===S.mode));
+// meal finder controls
+$('mealCap').oninput=e=>{S.mealCap=+e.target.value;$('mealVal').textContent=S.mealCap;clearTimeout(qt);qt=setTimeout(renderMeal,120)};$('mealCap').onchange=()=>store.set('mealCap',S.mealCap);
+$('sat').oninput=e=>{S.sat=+e.target.value;clearTimeout(qt);qt=setTimeout(renderMeal,120)};$('sat').onchange=()=>store.set('sat',S.sat);
+$('mfFilters').onclick=e=>{const b=e.target.closest('.pill');if(!b)return;if(b.dataset.ms){S.ms=b.dataset.ms;store.set('ms',S.ms)}else{S.combos=!S.combos;store.set('combos',S.combos)}renderMeal()};
+// global clicks
+document.body.addEventListener('click',e=>{
+  const t=e.target;let b;
+  if(b=t.closest('[data-add]')){const p=places.find(x=>x.id===b.dataset.add);const it=menuFor(p).items.find(i=>i.n===b.dataset.n);if(p&&it)addToCart(p,it);return}
+  if(b=t.closest('[data-x]')){const id=b.dataset.x;expanded.has(id)?expanded.delete(id):expanded.add(id);renderBrowse();return}
+  if(b=t.closest('[data-scan]')){openScan(b.dataset.scan);return}
+  if(b=t.closest('[data-build]')){const p=places.find(x=>x.id===b.dataset.build);const ml=mealsFor(p)[0];openBuilder(p,ml?ml.items:[]);return}
+  if(b=t.closest('[data-pick]')){const p=places.find(x=>x.id===b.dataset.pick);openBuilder(p,mealsFor(p)[+b.dataset.ix].items);return}
+  if(b=t.closest('[data-quick]')){const p=places.find(x=>x.id===b.dataset.quick);mealsFor(p)[+b.dataset.ix].items.forEach(it=>addToCart(p,it));toast('Meal added to cart');return}
+  if(b=t.closest('[data-bq]')){const x=B.list[+b.dataset.bq];x.q+= +b.dataset.d;if(x.q<=0)B.list.splice(+b.dataset.bq,1);renderB();return}
+  if(b=t.closest('[data-bt]')){bTab=b.dataset.bt;$('bQ').value='';renderB();return}
+  if(b=t.closest('[data-bn]')){const it=menuFor(B.p).items.find(i=>i.n===b.dataset.bn);const ex=B.list.find(x=>x.it===it);ex?ex.q++:B.list.push({it,q:1});renderB();return}
+  if(b=t.closest('[data-cq]')){const x=cart[+b.dataset.cq];x.q+= +b.dataset.d;if(x.q<=0)cart.splice(+b.dataset.cq,1);saveCart();renderCart();return}
+  if(t.id==='payBtn'||t.closest('#payBtn')){checkout();return}
+  if(b=t.closest('[data-mfp]')){showReceipt((ledger[today()]||[])[+b.dataset.mfp]);return}
+  if(b=t.closest('[data-copy]')){const o=JSON.parse($('rModal').dataset.o);copy(mfpLine(o.items[+b.dataset.copy]));return}
+  if(b=t.closest('[data-rad]')){S.rad=+b.dataset.rad;store.set('rad3',S.rad);$('lModal').classList.remove('show');load();return}
+});
+$('bQ').oninput=()=>renderB();
+$('bCancel').onclick=()=>$('bModal').classList.remove('show');
+$('bAdd').onclick=()=>{if(!B.list.length)return;B.list.forEach(x=>addToCart(B.p,x.it,x.q));$('bModal').classList.remove('show');toast('Meal added · '+R(totals(B.list).k)+' kcal')};
+$('rDone').onclick=()=>$('rModal').classList.remove('show');
+$('rCopyAll').onclick=()=>{const o=JSON.parse($('rModal').dataset.o);copy(o.items.map(mfpLine).join('\n')+`\nTotal: ${R(o.k)} kcal`)};
+// location sheet
+$('locBtn').onclick=()=>{$('lErr').textContent='';$('lQ').value='';$('lRad').innerHTML=[1,2,5,10,15].map(r=>`<button class="pill${r===S.rad?' on':''}" data-rad="${r}">${r} km</button>`).join('');$('lModal').classList.add('show')};
+$('lGps').onclick=async()=>{$('lErr').textContent='';const ok=await gps(true);if(ok){$('lModal').classList.remove('show');load()}else $('lErr').textContent='Location blocked. Allow it in Settings → Privacy → Location Services → Safari Websites, or search a suburb.'};
+$('lGo').onclick=async()=>{const q=$('lQ').value.trim();if(!q)return;try{S.loc=await geocode(q);store.set('loc',S.loc);setLocLbl();$('lModal').classList.remove('show');load()}catch(e){$('lErr').textContent=e.message}};
+$('lQ').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$('lGo').click()}};
+// scan
+$('mCancel').onclick=()=>$('menuModal').classList.remove('show');$('mGo').onclick=runScan;
+$('mUE').onclick=()=>{const p=places.find(x=>x.id===scanId);if(p)location.href=ueUrl(p)};
+// settings
+$('setBtn').onclick=()=>{$('sBud').value=S.budget;$('sKey').value=S.key;$('sModel').value=S.model;$('sNav').value=S.nav;$('setModal').classList.add('show')};
+$('sSave').onclick=()=>{S.budget=Math.max(500,+$('sBud').value||2000);S.key=$('sKey').value.trim();S.model=$('sModel').value.trim()||'claude-sonnet-5-5';S.nav=$('sNav').value;
+  store.set('budget',S.budget);store.set('apikey',S.key);store.set('model',S.model);store.set('nav',S.nav);$('setModal').classList.remove('show');renderAll()};
+$('sClear').onclick=()=>{aiMenus={};store.set('aiMenus',aiMenus);places.forEach(p=>delete p._m);$('setModal').classList.remove('show');renderAll()};
+$('sRefresh').onclick=()=>{$('setModal').classList.remove('show');load(true)};
+document.querySelectorAll('.modal').forEach(m=>m.onclick=e=>{if(e.target===m)m.classList.remove('show')});
+
+/* ======================= start ======================= */
+(async function init(){
+  badge();setLocLbl();
+  if(!S.loc||S.loc.gps){
+    $('locLbl').textContent='finding you…';
+    const ok=await gps();
+    if(!ok&&!S.loc){S.loc=DEFAULT_LOC;toast('Location off – showing Carnes Hill. Tap 📍 to change.')}
+    setLocLbl();
+  }
+  load();
+})();
+</script>
+</body>
+</html>
